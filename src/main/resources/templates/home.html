@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<!--suppress HtmlDeprecatedAttribute, XmlDuplicatedId -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style2.css">
+  <script language="javascript" src></script>
+  <link rel="icon" type="image/x-icon" href="/assets/icon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <title>Movie System</title>
+</head>
+
+
+<body>
+<div class="fbody">
+  <nav id="home" class="navbar">
+    <div class="container">
+      <a class="navbar-brand" href="#"><img src="/img/icon.png" alt=""></a>
+      <div></div>
+      <form class="d-flex">
+        <label for="search" class="form-label">
+          <input id="search" class="form-search form-control ms-5 me-2" type="search" placeholder="Search" aria-label="Search">
+        </label>
+        <button class="btn btn-outline-light" type="submit">Search</button>
+      </form>
+      <div class="dndk">
+        <input class="btn btn-outline-light openl" id="bt" type="button" value="Login">
+
+        <input class="btn btn-outline-light opens" id="btn2" type="button" value="Sign Up">
+      </div>
+    </div>
+  </nav>
+
+  <header>
+    <div class="container">
+      <div class="toolbar">
+        <a href="#">Trang chủ</a>
+        <a href="#">Thể loại</a>
+        <a href="#">Phim mới</a>
+        <a href="#">Phim lẻ</a>
+        <a href="#">Phim bộ</a>
+        <a href="#">Phim lẻ</a>
+        <a href="#">Phim thuyết minh</a>
+        <a href="#">Phim chiếu rạp</a>
+        <a href="#">TV show</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Swiper -->
+  <div id="home" class=container>
+    <div class="swiper mySwiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/Wq0KLPr/du-bao-tinh-yeu.jpg?1699609742" alt="Image 1"></a></div>
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/00krbwP/bat-kha-chien-bai.jpg?1699606683" alt="Image 2"></a></div>
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/nYKo8jB/dai-chien-titan-phan-6.jpg?1699537066" alt="Image 3"></a></div>
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/oKQQydX/los-billis.jpg?1699029718" alt="Image 4"></a></div>
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/Qlmmv52/upload-phan-2.jpg?1699027690" alt="Image 5"></a></div>
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/LRMMBKB/samurai-mat-xanh.jpg?1699026003" alt="Image 6"></a></div>
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/MQZZAO0/sieu-thi-sangjangdol.jpg?1699000978" alt="Image 7"></a></div>
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/w5KvM5p/hoc-vien-ki-lan.jpg?1698931531" alt="Image 8"></a></div>
+        <div class="swiper-slide"><a href="#"><img src="https://i.mpcdn.top/c/Jg93LAj/tro-choi-nghin-ty.jpg?1697987479" alt="Image 9"></a></div>
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+      const swiper = new Swiper(".mySwiper", {
+        rewind: true,
+        slidesPerView: 5,
+        spaceBetween: 30,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        autoplay: {
+          delay: 2500,
+          disableOnInteraction: false,
+        },
+      });
+    </script>
+
+    <div class="search">
+      <form id="form-filter" class="form-inline" method="GET" action="">
+
+        <div class="list-search">
+          <label for="filter-eptype">Tiến độ</label>
+          <select class="form-control" id="filter-eptype" name="status">
+            <option value="">Tất cả</option>
+            <option value="complete">Hoàn thành</option>
+            <option value="ongoing">Chưa xong</option>
+          </select>
+        </div>
+
+        <div class="list-search">
+          <!--<label for="filter-category">Thể loại</label>-->
+
+          <span class="">
+                    <!--<select style="margin-top: 5px;" class="" id="filter-category" name="genres" multiple="multiple">
+                        <option value="38">Đời Thường</option>
+                    </select>-->
+                    <div class="btn-group">
+                        <button type="button" class="multiselect dropdown-toggle form-control selectpicker" data-toggle="dropdown" title="Genres">
+                            <span class="multiselect-selected-text">Genres</span>
+                            <b class="caret"></b>
+                        </button>
+                        <ul class="multiselect-container dropdown-menu">
+                            <li>
+                              <a tabindex="0">
+                                <label for="genre" class="checkbox">
+                                  <input id="genre" type="checkbox" value="38"> Đời Thường
+                                </label>
+                              </a>
+                            </li>
+                        </ul>
+                    </div>
+                </span>
+
+        </div>
+        <div class="list-search">
+          <label for="filter-year">Năm phát hành</label>
+          <select id="filter-year" name="year" class="form-control">
+            <option value="">Tất cả</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+            <option value="2020">2020</option>
+            <option value="2019">2019</option>
+            <option value="2018">2018</option>
+            <option value="2017">2017</option>
+            <option value="2016">2016</option>
+            <option value="2015">2015</option>
+            <option value="2014">2014</option>
+            <option value="2013">2013</option>
+            <option value="2012">2012</option>
+            <option value="2011">2011</option>
+            <option value="2010">2010</option>
+          </select>
+        </div>
+        <div class="list-search">
+          <label for="filter-sort">Sắp xếp</label>
+          <select class="form-control" id="filter-sort" name="sort">
+            <option value="popular">Lượt xem</option>
+            <option value="comment">Bình luận</option>
+            <option value="year">Năm</option>
+          </select>
+        </div>
+        <button type="submit" id="btn-movie-filter" class="btn btn-blue btn-filter-movie"><span>Áp dụng</span></button>
+      </form>
+    </div>
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="list-all-film">
+          <div class="pa-title">
+            <a href="#"><div class="pa-title-item active">Phim bộ mới cập nhật</div></a>
+            <a href="#"><div class="pa-title-item">Phim lẻ mới cấp nhật</div></a>
+            <a href="#"><div class="pa-title-item">Phim đã hoàn thành</div></a>
+          </div>
+          <div class="row" style="margin-left: 0;margin-right: 0;">
+            <div class ="movie col-lg-3 col-md-6">
+              <a href="#"> // information of movie
+                <div class="movie-item text-center">
+                  <img class="imgh" src="https://imgur-com.cdn.ampproject.org/i/imgur.com/RDeXgyn.jpg" alt="">
+                  <div class="movie-meta">
+                    <div class="movie-name">Tên anime</div>
+                    <p class="p1">Số cmt</p>
+                    <p class="p2">Số view</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div id="pagination">
+          <a href="" ><<</a>
+          <a href="" class="paitem active">1</a>
+          <a href="" class="paitem">2</a>
+          <a href="" class="paitem">3</a>
+          <a href="" class="paitem">4</a>
+          <a href="" class="paitem">5</a>
+          <a href="">>></a>
+        </div>
+
+        <div class="list-all-film">
+          <a href="#"><div class="pa-title-item-1">Phim hoạt hình</div></a>
+          <div class="row" style="margin-left: 0;margin-right: 0;">
+            <div class ="movie col-lg-3 col-md-6">
+              <a href="">
+                <div class="movie-item text-center">
+                  <img class="imgh" src="https://imgur-com.cdn.ampproject.org/i/imgur.com/RDeXgyn.jpg" alt="">
+                  <div class="movie-meta">
+                    <div class="movie-name">Tên anime</div>
+                    <p class="p1">Số cmt</p>
+                    <p class="p2">Số view</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="list-all-film">
+          <a href="#"><div class="pa-title-item-1">Được yêu thích</div></a>
+          <div class="row" style="margin-left: 0;margin-right: 0;">
+            <div class ="movie col-lg-3 col-md-6">
+              <a href="">
+                <div class="movie-item text-center">
+                  <img class="imgh" src="https://imgur-com.cdn.ampproject.org/i/imgur.com/RDeXgyn.jpg" alt="">
+                  <div class="movie-meta">
+                    <div class="movie-name">Tên anime</div>
+                    <p class="p1">Số cmt</p>
+                    <p class="p2">Số view</p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="listall">
+          <a href="#"><div class="pa-title-item-2">Phim sắp chiếu</div></a>
+          <div class="content">
+            <a title="Goblin Slayer 2nd Season | ゴブリンスレイヤーⅡ - Goblin Slayer II">
+              <span class="status">04/??</span>
+              <div class="list-top-movie-item-thumb" style="background-image: url('https://imgur-com.cdn.ampproject.org/i/imgur.com/WyD8zAy.jpg')"></div>
+              <div class="list-top-movie-item-info">
+                <span class="list-top-movie-item-vn">Goblin Slayer II</span>
+                <span class="list-top-movie-item-en"> Goblin Slayer ...</span>
+                <span class="list-top-movie-item-view">1200 Lượt xem</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="row justify-content-between">
+        <div class="col-auto">
+          <p>Copyrights @Tổ 5. All Rights reserved</p>
+        </div>
+        <div class="col-auto">
+          <p>Designed by <a href="#">Movie System</a></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+<div id="login" class="bg-img">
+  <div class="contenlogin">
+    <input type="button" class="close" value="X">
+    <script Language="javascript">
+      const btn = document.querySelector('.close');
+      const btno = document.querySelector('.openl');
+      const tat = document.querySelector('.bg-img');
+      const bd = document.querySelector('.fbody');
+      btn.addEventListener('click', function(){
+        tat.style.display="none";
+        bd.style.opacity="1";
+      })
+      btno.addEventListener('click', function(){
+        tat.style.display="block";
+        bd.style.opacity="0.1";
+        bd.style.transition="0.7s";
+      })
+    </script>
+    <header>Login Form</header>
+    <form action="#">
+      <div class="field">
+        <span class="fa fa-user"></span>
+        <label for="email_or_phone">
+          <input id="email_or_phone" type="text" required placeholder="Email or Phone">
+        </label>
+      </div>
+      <div class="field space">
+        <span class="fa fa-lock"></span>
+        <label for="password">
+          <input id="password" type="password" class="pass-key" required placeholder="Password">
+        </label>
+        <span class="show">SHOW</span>
+      </div>
+      <div class="pass">
+        <a href="#">Forgot Password?</a>
+      </div>
+      <div class="field">
+        <input type="submit" value="LOGIN">
+      </div>
+    </form>
+    <div class="login">Or login with</div>
+    <div class="links">
+      <div class="facebook">
+        <i class="fab fa-facebook-f"><span>Facebook</span></i>
+      </div>
+      <div class="instagram">
+        <i class="fab fa-instagram"><span>Instagram</span></i>
+      </div>
+    </div>
+    <div class="signup">Don't have account?
+      <input type="button" class="changes" value="Sign Up">
+    </div>
+  </div>
+</div>
+
+<script>
+  const pass_field = document.querySelector('.pass-key');
+  const showBtn = document.querySelector('.show');
+  showBtn.addEventListener('click', function(){
+    if(pass_field.type === "password"){
+      pass_field.type = "text";
+      showBtn.textContent = "HIDE";
+      showBtn.style.color = "#3498db";
+    }else{
+      pass_field.type = "password";
+      showBtn.textContent = "SHOW";
+      showBtn.style.color = "#222";
+    }
+  });
+</script>
+
+
+<div id="signup" class="bg-img-si">
+  <div class="contensignup">
+    <input type="button" class="closes" value="X">
+    <script Language="javascript">
+      const btn1 = document.querySelector('.closes');
+      const btns = document.querySelector('.opens');
+      const tat1 = document.querySelector('.bg-img-si');
+      btn1.addEventListener('click', function(){
+        tat1.style.display="none";
+        bd.style.opacity="1";
+      })
+      btns.addEventListener('click', function(){
+        tat1.style.display="block";
+        bd.style.opacity="0.1";
+        bd.style.transition="0.7s";
+      })
+    </script>
+    <header>Sign Up Form</header>
+    <form action="#">
+      <div class="field">
+        <span class="fa fa-user"></span>
+        <label for="emailOrPhone">
+          <input id="emailOrPhone" type="text" required placeholder="Email or Phone">
+        </label>
+      </div>
+      <div class="field space">
+        <span class="fa fa-lock"></span>
+        <label for="pass">
+          <input id="pass" type="password" class="pass-key" required placeholder="Password">
+        </label>
+        <span class="show">SHOW</span>
+      </div>
+      <div class="field space">
+        <span class="fa fa-lock"></span>
+        <label for="confirm_pass">
+          <input id="confirm_pass" type="password" class="pass-key" required placeholder="Confirm Your Password">
+        </label>
+        <span class="show">SHOW</span>
+      </div>
+      <div class="field" style="margin: 15px 0;">
+        <input type="submit" value="SIGN UP">
+      </div>
+    </form>
+    <div class="signup">Have account?
+      <input type="button" class="changel" value="Login">
+      <script Language="javascript">
+        const btnchangel = document.querySelector('.changel');
+        btnchangel.addEventListener('click', function(){
+          tat1.style.display="none";
+          tat.style.display="block";
+        })
+        const btnchanges = document.querySelector('.changes');
+        btnchanges.addEventListener('click', function(){
+          tat.style.display="none";
+          tat1.style.display="block";
+        })
+      </script>
+    </div>
+  </div>
+</div>
+</body>
+
+</html>

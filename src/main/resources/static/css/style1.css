@@ -1,0 +1,125 @@
+
+.dd{
+    background-color: #181a1b;
+    padding: 10PX;
+    font-size: 17px;
+    color: var(--body);
+    width: 100%;
+    margin-top: 10px;
+}
+
+a{
+    color: white;
+    text-decoration: none;
+    transition: all 0.7s ease;
+}
+a:hover{
+    color: white;
+}
+
+
+
+/*inf*/
+.inf-all{
+    background-color: #181a1b;
+    margin-top: 10px;
+    overflow: auto;
+}
+.inf-all .inf-avt-link-item-img{
+    float:left;
+    padding: 8px 10px;
+    object-fit: cover;
+    width: 50%;
+    position: relative;
+}
+.inf-avt-link-item-img .inf-btn{
+    background-color: var(--bg1);
+    opacity: 0.9;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0 10px;
+}
+.inf-btn .btnpd{
+    margin: 20px 8px;
+}
+.inf-all .inf-avt-link-item{
+    float: left;
+    width: 50%;
+}
+.inf-avt-link-item-img .imgh{
+    width: 100%;
+}
+.inf-all .inf-avt-link-item-status,
+.inf-all .inf-avt-link-item-tap{
+    border: 1px solid var(--brand);
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding-left: 10px;
+}
+.inf-avt-link-item-name h3{
+    margin: 0;
+    padding: 0;
+}
+.inf-avt-link-item-name .nho{
+    font-size: 15px;
+    color: #a8a094;
+    font-weight: lighter;
+}
+.inf-avt-link-item-tap .inf-avt-link-item-tap-list{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.inf-avt-link-item-tap-list a{
+    background-color: var(--bg2);
+    color: var(--body);
+    padding: 10px 15px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+}
+.inf-film{
+    clear: left;  
+    padding-top:10px ;
+}
+.inf-film hr{
+    color: var(--brand);
+}
+
+.inf-avt-link-item-tap-list a:hover{
+    background-color: var(--brand);
+    color: var(--bg2);
+    transform-origin: 10%;
+}
+
+
+
+
+
+.count-tapfilm{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    background-color: #151718;
+    padding: 10px;
+}
+.count-tapfilm a{
+    padding: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: var(--bg2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.count-tapfilm a:hover{
+    background-color: var(--brand);
+    color: var(--bg2);
+}
