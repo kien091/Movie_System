@@ -58,4 +58,11 @@ public class MovieService {
     public void delete(Movie movie){
         movieRepository.delete(movie);
     }
+
+    public List<Movie> findMoviesByGenre(String genre){
+        return movieRepository.findMoviesByGenre(genre);
+    }
+    public List<Movie> findTop16ByOrderByTotalViewDesc(){
+        return movieRepository.findTop16ByOrderByTotalViewDesc();
+    }
 }
