@@ -22,11 +22,11 @@
 <div class="fbody">
   <nav id="home" class="navbar">
     <div class="container">
-      <a class="navbar-brand" href="#"><img src="/img/icon.png" alt="" style="height: 60px; width: 200px"></a>
+      <a class="navbar-brand" th:href="@{/}"><img src="/img/icon.png" alt="" style="height: 60px; width: 200px"></a>
       <div></div>
-      <form class="d-flex">
+      <form class="d-flex" th:action="@{/search}" method="get">
         <label for="search" class="form-label">
-          <input id="search" class="form-search form-control ms-5 me-2" type="search" placeholder="Search" aria-label="Search">
+          <input id="search" name="search" class="form-search form-control ms-5 me-2" type="search" placeholder="Search" aria-label="Search">
         </label>
         <button class="btn btn-outline-light" type="submit">Search</button>
       </form>
@@ -41,15 +41,13 @@
   <header>
     <div class="container">
       <div class="toolbar">
-        <a href="#">Trang chủ</a>
+        <a th:href="@{/}">Trang chủ</a>
         <a href="#">Thể loại</a>
+        <a href="#">Quốc gia</a>
         <a href="#">Phim mới</a>
-        <a href="#">Phim lẻ</a>
-        <a href="#">Phim bộ</a>
-        <a href="#">Phim lẻ</a>
-        <a href="#">Phim thuyết minh</a>
+        <a th:href="@{/filter(category=series)}">Phim bộ</a>
+        <a th:href="@{/filter(category=feature-film)}">Phim lẻ</a>
         <a href="#">Phim chiếu rạp</a>
-        <a href="#">TV show</a>
       </div>
     </div>
   </header>
@@ -58,7 +56,7 @@
   <div id="home" class=container>
     <div class="swiper mySwiper">
       <div class="swiper-wrapper">
-        <div class="swiper-slide" th:each="movie : ${favorite}">
+        <div class="swiper-slide" th:each="movie : ${carousel}">
           <a href="#">
             <img th:src="${movie.getPoster()}" alt="Image 1" style="height: 210px;">
           </a></div>
@@ -84,79 +82,60 @@
     </script>
 
     <div class="search">
-      <form id="form-filter" class="form-inline" method="GET" action="">
+      <form id="form-filter" class="form-inline" method="GET" th:action="@{/filterBy}">
 
         <div class="list-search">
           <label for="filter-eptype">Tiến độ</label>
           <select class="form-control" id="filter-eptype" name="status">
-            <option value="">Tất cả</option>
-            <option value="complete">Hoàn thành</option>
-            <option value="ongoing">Chưa xong</option>
+            <option value="Tất cả">Tất cả</option>
+            <option value="Hoàn thành">Hoàn thành</option>
+            <option value="Đang tiến hành">Đang tiến hành</option>
           </select>
         </div>
 
         <div class="list-search">
           <label for="filter-category">Thể loại</label>
-          <select id="filter-category" name="year" class="form-control">
-            <option value="">Tất cả</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-            <option value="2019">2019</option>
-            <option value="2018">2018</option>
-            <option value="2017">2017</option>
-            <option value="2016">2016</option>
-            <option value="2015">2015</option>
-            <option value="2014">2014</option>
-            <option value="2013">2013</option>
-            <option value="2012">2012</option>
-            <option value="2011">2011</option>
-            <option value="2010">2010</option>
+          <select id="filter-category" name="genre" class="form-control">
+            <option value="Tất cả">Tất cả</option>
+            <option th:each="genre : ${genres}" th:value="${genre}" th:text="${genre}">Tất cả</option>
           </select>
 
         </div>
         <div class="list-search">
           <label for="filter-year">Năm phát hành</label>
           <select id="filter-year" name="year" class="form-control">
-            <option value="">Tất cả</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-            <option value="2019">2019</option>
-            <option value="2018">2018</option>
-            <option value="2017">2017</option>
-            <option value="2016">2016</option>
-            <option value="2015">2015</option>
-            <option value="2014">2014</option>
-            <option value="2013">2013</option>
-            <option value="2012">2012</option>
-            <option value="2011">2011</option>
-            <option value="2010">2010</option>
+            <option value="Tất cả">Tất cả</option>
+            <option th:each="year:${releaseDates}" th:value="${year}" th:text="${year}">Tất cả</option>
           </select>
         </div>
         <div class="list-search">
           <label for="filter-sort">Sắp xếp</label>
           <select class="form-control" id="filter-sort" name="sort">
-            <option value="popular">Lượt xem</option>
-            <option value="comment">Bình luận</option>
-            <option value="year">Năm</option>
+            <option value="Tất cả">Tất cả</option>
+            <option value="Lượt xem">Lượt xem</option>
+            <option value="Điểm đánh giá">Điểm đánh giá</option>
           </select>
         </div>
         <button type="submit" id="btn-movie-filter" class="btn btn-blue btn-filter-movie"><span>Áp dụng</span></button>
       </form>
     </div>
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+      <li class="breadcrumb-item" th:if="${navigation != null}">
+        <a th:href="@{/filter(category=${navigation == 'Phim bộ' ? 'series' : (navigation == 'Phim lẻ' ? 'feature-film' : '')})}"
+           th:text="${navigation}"></a>
+      </li>
+    </ul>
     <div class="row">
       <div class="col-lg-8">
         <div class="list-all-film">
-          <div class="pa-title">
-            <a href="#"><div class="pa-title-item active">Phim bộ mới cập nhật</div></a>
-            <a href="#"><div class="pa-title-item">Phim lẻ mới cấp nhật</div></a>
-            <a href="#"><div class="pa-title-item">Phim đã hoàn thành</div></a>
+          <div class="pa-title" th:if="${!navigation.contains('Kết quả tìm kiếm')}">
+            <a th:href="@{/filter(category=series)}"><div th:class="${navigation == 'Phim bộ' ? 'pa-title-item active' : 'pa-title-item'}">Phim bộ mới cập nhật</div></a>
+            <a th:href="@{/filter(category=feature-film)}"><div th:class="${navigation == 'Phim lẻ' ? 'pa-title-item active' : 'pa-title-item'}">Phim lẻ mới cấp nhật</div></a>
+            <a th:href="@{/filter(category=complete)}"><div th:class="${navigation == 'Phim đã hoàn thành' ? 'pa-title-item active' : 'pa-title-item'}">Phim đã hoàn thành</div></a>
           </div>
           <div class="row" style="margin-left: 0;margin-right: 0;" >
-            <div class ="movie col-lg-3 col-md-6" th:each="movie : ${seriesMovie}">
+            <div class ="movie col-lg-3 col-md-6" th:each="movie : ${movies}">
               <a href="#">
                 <div class="movie-item text-center">
                   <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt="" style="object-fit: cover; height: 210px;">
@@ -169,17 +148,22 @@
             </div>
           </div>
         </div>
-        <div id="pagination">
-          <a href="" ><<</a>
-          <a href="" class="paitem active">1</a>
-          <a href="" class="paitem">2</a>
-          <a href="" class="paitem">3</a>
-          <a href="" class="paitem">4</a>
-          <a href="" class="paitem">5</a>
-          <a href="">>></a>
+        <div class="pagination" th:if="${cartoon == null && favorite == null}">
+          <a th:if="${moviesPage.hasPrevious()}" th:href="@{/filter?category=${navigation}&amp;page=0&amp;size=${moviesPage.size}}" aria-label="First">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+          <a th:each="i : ${#numbers.sequence(0, moviesPage.totalPages - 1)}"
+             th:class="${moviesPage.number == i} ? 'paitem active' : 'paitem'"
+             th:href="@{/filter?category=${navigation}&amp;page=${i}&amp;size=${moviesPage.size}}"
+             th:text="${i + 1}"></a>
+          <a th:if="${moviesPage.hasNext()}"
+             th:href="@{/filter?category=${navigation}&amp;page=${moviesPage.totalPages - 1}&amp;size=${moviesPage.size}}"
+             aria-label="Last">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
         </div>
 
-        <div class="list-all-film">
+        <div class="list-all-film" th:if="${cartoon != null}">
           <a href="#"><div class="pa-title-item-1">Phim hoạt hình</div></a>
           <div class="row" style="margin-left: 0;margin-right: 0;">
             <div class ="movie col-lg-3 col-md-6" th:each="movie : ${cartoon}">
@@ -195,7 +179,7 @@
             </div>
           </div>
         </div>
-        <div class="list-all-film">
+        <div class="list-all-film" th:if="${favorite != null}">
           <a href="#"><div class="pa-title-item-1">Được yêu thích</div></a>
           <div class="row" style="margin-left: 0;margin-right: 0;">
             <div class ="movie col-lg-3 col-md-6" th:each="movie : ${favorite}">
@@ -214,15 +198,15 @@
       </div>
       <div class="col-lg-4">
         <div class="listall">
-          <a href="#"><div class="pa-title-item-2">Phim sắp chiếu</div></a>
-          <div class="content">
-            <a title="Goblin Slayer 2nd Season | ゴブリンスレイヤーⅡ - Goblin Slayer II">
-              <span class="status">04/??</span>
-              <div class="list-top-movie-item-thumb" style="background-image: url('https://imgur-com.cdn.ampproject.org/i/imgur.com/WyD8zAy.jpg')"></div>
+          <a href="#"><div class="pa-title-item-2">Phim vừa ra mắt</div></a>
+          <div class="content" th:each="top6Movie : ${top6MoviesNewest}">
+            <a th:title="${top6Movie.getTitle()}">
+              <span class="status" th:text="${top6Movie.getEpisodes().size() + '/' + top6Movie.getTotalEpisode()}">04/??</span>
+              <div class="list-top-movie-item-thumb" th:style="'background-image: url(' + ${top6Movie.getPoster()} + ')'"></div>
               <div class="list-top-movie-item-info">
-                <span class="list-top-movie-item-vn">Goblin Slayer II</span>
-                <span class="list-top-movie-item-en"> Goblin Slayer ...</span>
-                <span class="list-top-movie-item-view">1200 Lượt xem</span>
+                <span class="list-top-movie-item-vn" th:text="${top6Movie.getTitle()}"></span>
+                <span class="list-top-movie-item-view" th:text="${top6Movie.getReleaseDate()}"></span>
+                <span class="list-top-movie-item-view" th:text="${top6Movie.getTotalView() + ' Lượt xem'}"></span>
               </div>
             </a>
           </div>
