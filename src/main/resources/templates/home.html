@@ -122,7 +122,9 @@
     <ul class="breadcrumb">
       <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
       <li class="breadcrumb-item" th:if="${navigation != null}">
-        <a th:href="@{/filter(category=${navigation == 'Phim bộ' ? 'series' : (navigation == 'Phim lẻ' ? 'feature-film' : '')})}"
+        <a th:href="@{/filter(category=${navigation == 'Phim bộ' ? 'series' :
+                    (navigation == 'Phim lẻ' ? 'feature-film' :
+                    (navigation == 'Phim đã hoàn thành' ? 'complete' : ''))})}"
            th:text="${navigation}"></a>
       </li>
     </ul>
@@ -148,16 +150,17 @@
             </div>
           </div>
         </div>
-        <div class="pagination" th:if="${cartoon == null && favorite == null}">
-          <a th:if="${moviesPage.hasPrevious()}" th:href="@{/filter?category=${navigation}&amp;page=0&amp;size=${moviesPage.size}}" aria-label="First">
+        <div id="pagination" th:if="${cartoon == null && favorite == null}">
+          <a th:if="${moviesPage.hasPrevious()}"
+             th:href="@{/filter(category=${category}, page=*{0}, size=${moviesPage.size})}"
             <span aria-hidden="true">&laquo;</span>
           </a>
           <a th:each="i : ${#numbers.sequence(0, moviesPage.totalPages - 1)}"
-             th:class="${moviesPage.number == i} ? 'paitem active' : 'paitem'"
-             th:href="@{/filter?category=${navigation}&amp;page=${i}&amp;size=${moviesPage.size}}"
+             th:class="${moviesPage.number == i ? 'paitem active' : 'paitem'}"
+             th:href="@{/filter(category=${category}, page=*{i}, size=${moviesPage.size})}"
              th:text="${i + 1}"></a>
           <a th:if="${moviesPage.hasNext()}"
-             th:href="@{/filter?category=${navigation}&amp;page=${moviesPage.totalPages - 1}&amp;size=${moviesPage.size}}"
+             th:href="@{/filter(category=${category}, page=*{moviesPage.totalPages - 1}, size=${moviesPage.size})}"
              aria-label="Last">
             <span aria-hidden="true">&raquo;</span>
           </a>

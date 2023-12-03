@@ -4,6 +4,7 @@ import Source.Models.Movie;
 import Source.Services.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 @Controller
 @RequestMapping("/")
 public class HomeController {
@@ -54,18 +56,27 @@ public class HomeController {
                            @RequestParam(name = "size", defaultValue = "16") int size,
                            Model model){
         Pageable pageable = PageRequest.of(page, size);
-        Page<Movie> moviePage = movieService.filterMoviesByCategory(category, pageable);
+        Page<Movie> moviePage = null;
+        if(!category.equals("search")){
+            moviePage = movieService.filterMoviesByCategory(category, pageable);
+            String navigation = switch (category) {
+                case "series" -> "Phim bộ";
+                case "feature-film" -> "Phim lẻ";
+                case "complete" -> "Phim đã hoàn thành";
+                default -> category;
+            };
+            model.addAttribute("navigation", navigation);
+        }
+        else{
+            List<Movie> movies = (List<Movie>) model.getAttribute("movies");
+            assert movies != null;
+            moviePage = new PageImpl<>(movies, pageable, movies.size());
+        }
 
         model.addAttribute("movies", moviePage.getContent());
         model.addAttribute("moviesPage", moviePage);
 
-        String navigation = switch (category) {
-            case "series" -> "Phim bộ";
-            case "feature-film" -> "Phim lẻ";
-            case "complete" -> "Phim đã hoàn thành";
-            default -> "Unknown";
-        };
-        model.addAttribute("navigation", navigation);
+        model.addAttribute("category", category);
 
 
         List<Movie> favorite = movieService.findTop16ByOrderByTotalViewDesc();
@@ -134,6 +145,7 @@ public class HomeController {
                     .toList();
         }
 
+        model.addAttribute("movies", movies);
         model.addAttribute("navigation",
                 "Kết quả tìm kiếm: \" Lọc \"");
 
