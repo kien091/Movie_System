@@ -111,19 +111,12 @@ public class MovieService {
     }
 
     public Page<Movie> filterMoviesByCategory(String category, Pageable pageable) {
-        List<Movie> movies = new ArrayList<>();
-
-        switch (category) {
-            case "series":
-                movies = movieRepository.findMoviesSeries();
-                break;
-            case "feature-film":
-                movies = movieRepository.findFeatureMovies();;
-                break;
-            case "complete":
-                movies = movieRepository.findMoviesComplete();
-                break;
-        }
+        List<Movie> movies = switch (category) {
+            case "series" -> movieRepository.findMoviesSeries();
+            case "feature-film" -> movieRepository.findFeatureMovies();
+            case "complete" -> movieRepository.findMoviesComplete();
+            default -> movieRepository.findAll();
+        };
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), movies.size());

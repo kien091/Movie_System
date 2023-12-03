@@ -9,13 +9,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
@@ -56,7 +53,7 @@ public class HomeController {
                            @RequestParam(name = "size", defaultValue = "16") int size,
                            Model model){
         Pageable pageable = PageRequest.of(page, size);
-        Page<Movie> moviePage = null;
+        Page<Movie> moviePage;
         if(!category.equals("search")){
             moviePage = movieService.filterMoviesByCategory(category, pageable);
             String navigation = switch (category) {
