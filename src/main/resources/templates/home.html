@@ -3,366 +3,425 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://kit.fontawesome.com/9011056154.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/style2.css">
-  <script language="javascript" src></script>
-  <link rel="icon" type="image/x-icon" href="/assets/icon.ico" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link rel="stylesheet" href="http://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <title>Movie System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/9011056154.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style2.css">
+    <script language="javascript" src></script>
+    <link rel="icon" type="image/x-icon" href="/assets/icon.ico"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="http://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <title>Movie System</title>
+    <style>
+        .dropdown-container:hover .dropdown {
+            display: grid;
+            width: auto;
+            background-color: #272727;
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .dropdown a{
+            display: block;
+            padding: 15px;
+            font-size: medium;
+            font-weight: 500;
+            width: fit-content;
+            white-space: nowrap;
+        }
+    </style>
 </head>
 
 
 <body>
 <div class="fbody">
-  <nav id="home" class="navbar">
-    <div class="container">
-      <a class="navbar-brand" th:href="@{/}"><img src="/img/icon.png" alt="" style="height: 60px; width: 200px"></a>
-      <div></div>
-      <form class="d-flex" th:action="@{/search}" method="get">
-        <label for="search" class="form-label">
-          <input id="search" name="search" class="form-search form-control ms-5 me-2" type="search" placeholder="Search" aria-label="Search">
-        </label>
-        <button class="btn btn-outline-light" type="submit">Search</button>
-      </form>
-      <div class="dndk">
-        <input class="btn btn-outline-light openl" id="bt" type="button" value="Login">
-
-        <input class="btn btn-outline-light opens" id="btn2" type="button" value="Sign Up">
-      </div>
-    </div>
-  </nav>
-
-  <header>
-    <div class="container">
-      <div class="toolbar">
-        <a th:href="@{/}">Trang chủ</a>
-        <a href="#">Thể loại</a>
-        <a href="#">Quốc gia</a>
-        <a href="#">Phim mới</a>
-        <a th:href="@{/filter(category=series)}">Phim bộ</a>
-        <a th:href="@{/filter(category=feature-film)}">Phim lẻ</a>
-        <a href="#">Phim chiếu rạp</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Swiper -->
-  <div id="home" class=container>
-    <div class="swiper mySwiper">
-      <div class="swiper-wrapper">
-        <div class="swiper-slide" th:each="movie : ${carousel}">
-          <a href="#">
-            <img th:src="${movie.getPoster()}" alt="Image 1" style="height: 210px;">
-          </a></div>
-      </div>
-      <div class="swiper-button-next"></div>
-      <div class="swiper-button-prev"></div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-      const swiper = new Swiper(".mySwiper", {
-        rewind: true,
-        slidesPerView: 5,
-        spaceBetween: 30,
-        navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
-        },
-        autoplay: {
-          delay: 2500,
-          disableOnInteraction: false,
-        },
-      });
-    </script>
-
-    <div class="search">
-      <form id="form-filter" class="form-inline" method="GET" th:action="@{/filterBy}">
-
-        <div class="list-search">
-          <label for="filter-eptype">Tiến độ</label>
-          <select class="form-control" id="filter-eptype" name="status">
-            <option value="Tất cả">Tất cả</option>
-            <option value="Hoàn thành">Hoàn thành</option>
-            <option value="Đang tiến hành">Đang tiến hành</option>
-          </select>
+    <nav id="home" class="navbar">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}"><img src="/img/icon.png" alt=""
+                                                        style="height: 60px; width: 200px"></a>
+            <div></div>
+            <form class="d-flex" th:action="@{/search}" method="get">
+                <label for="search" class="form-label">
+                    <input id="search" name="search" class="form-search form-control ms-5 me-2" type="search"
+                           placeholder="Search" aria-label="Search">
+                </label>
+                <button class="btn btn-outline-light" type="submit">Search</button>
+            </form>
+            <div class="dndk">
+                <input class="btn btn-outline-light openl" id="bt" type="button" value="Login">
+                <input class="btn btn-outline-light opens" id="btn2" type="button" value="Sign Up">
+            </div>
         </div>
+    </nav>
 
-        <div class="list-search">
-          <label for="filter-category">Thể loại</label>
-          <select id="filter-category" name="genre" class="form-control">
-            <option value="Tất cả">Tất cả</option>
-            <option th:each="genre : ${genres}" th:value="${genre}" th:text="${genre}">Tất cả</option>
-          </select>
+    <header>
+        <div class="container">
+            <div class="toolbar" style="justify-content: space-between">
+                <a th:href="@{/}">Trang chủ</a>
+                <div class="dropdown-container">
+                    <a>Thể loại</a>
+                    <div class="dropdown" style="z-index: 9999">
+                        <a th:each="genre : ${genres}" th:href="@{/filter(category=${genre})}" th:text="${genre}"></a>
+                    </div>
+                </div>
+                <div class="dropdown-container">
+                    <a>Quốc gia</a>
+                    <div class="dropdown" style="z-index: 9999">
+                        <a th:each="nation : ${nations}" th:href="@{/filter(category=${nation})}" th:text="${nation}"></a>
+                    </div>
+                </div>
+                <div class="dropdown-container">
+                    <a>Phim mới</a>
+                    <div class="dropdown" style="z-index: 9999">
+                        <a th:each="year : ${releaseDates}" th:href="@{/filter(category=${year})}" th:text="${year}"></a>
+                    </div>
+                </div>
+                <a th:href="@{/filter(category=series)}">Phim bộ</a>
+                <a th:href="@{/filter(category=feature-film)}">Phim lẻ</a>
+                <a th:href="@{/filter(category=english-language-films)}">Phim chiếu rạp</a>
+            </div>
+        </div>
+    </header>
 
+    <!-- Swiper -->
+    <div id="home" class=container>
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" th:each="movie : ${carousel}">
+                    <a href="#">
+                        <img th:src="${movie.getPoster()}" alt="Image 1" style="height: 210px;">
+                    </a></div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
         </div>
-        <div class="list-search">
-          <label for="filter-year">Năm phát hành</label>
-          <select id="filter-year" name="year" class="form-control">
-            <option value="Tất cả">Tất cả</option>
-            <option th:each="year:${releaseDates}" th:value="${year}" th:text="${year}">Tất cả</option>
-          </select>
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <script>
+            const swiper = new Swiper(".mySwiper", {
+                rewind: true,
+                slidesPerView: 5,
+                spaceBetween: 30,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                autoplay: {
+                    delay: 2500,
+                    disableOnInteraction: false,
+                },
+            });
+        </script>
+
+        <div class="search">
+            <form id="form-filter" class="form-inline" method="GET" th:action="@{/filterBy}">
+
+                <div class="list-search">
+                    <label for="filter-eptype">Tiến độ</label>
+                    <select class="form-control" id="filter-eptype" name="status">
+                        <option value="Tất cả">Tất cả</option>
+                        <option value="Hoàn thành">Hoàn thành</option>
+                        <option value="Đang tiến hành">Đang tiến hành</option>
+                    </select>
+                </div>
+
+                <div class="list-search">
+                    <label for="filter-category">Thể loại</label>
+                    <select id="filter-category" name="genre" class="form-control">
+                        <option value="Tất cả">Tất cả</option>
+                        <option th:each="genre : ${genres}" th:value="${genre}" th:text="${genre}"></option>
+                    </select>
+
+                </div>
+                <div class="list-search">
+                    <label for="filter-year">Năm phát hành</label>
+                    <select id="filter-year" name="year" class="form-control">
+                        <option value="Tất cả">Tất cả</option>
+                        <option th:each="year:${releaseDates}" th:value="${year}" th:text="${year}"></option>
+                    </select>
+                </div>
+                <div class="list-search">
+                    <label for="filter-sort">Sắp xếp</label>
+                    <select class="form-control" id="filter-sort" name="sort">
+                        <option value="Tất cả">Tất cả</option>
+                        <option value="Lượt xem">Lượt xem</option>
+                        <option value="Điểm đánh giá">Điểm đánh giá</option>
+                    </select>
+                </div>
+                <button type="submit" id="btn-movie-filter" class="btn btn-blue btn-filter-movie"><span>Áp dụng</span>
+                </button>
+            </form>
         </div>
-        <div class="list-search">
-          <label for="filter-sort">Sắp xếp</label>
-          <select class="form-control" id="filter-sort" name="sort">
-            <option value="Tất cả">Tất cả</option>
-            <option value="Lượt xem">Lượt xem</option>
-            <option value="Điểm đánh giá">Điểm đánh giá</option>
-          </select>
-        </div>
-        <button type="submit" id="btn-movie-filter" class="btn btn-blue btn-filter-movie"><span>Áp dụng</span></button>
-      </form>
-    </div>
-    <ul class="breadcrumb">
-      <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
-      <li class="breadcrumb-item" th:if="${navigation != null}">
-        <a th:href="@{/filter(category=${navigation == 'Phim bộ' ? 'series' :
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+            <li class="breadcrumb-item" th:if="${navigation != null}">
+                <a th:href="@{/filter(category=${navigation == 'Phim bộ' ? 'series' :
                     (navigation == 'Phim lẻ' ? 'feature-film' :
                     (navigation == 'Phim đã hoàn thành' ? 'complete' : ''))})}"
-           th:text="${navigation}"></a>
-      </li>
-    </ul>
-    <div class="row">
-      <div class="col-lg-8">
-        <div class="list-all-film">
-          <div class="pa-title" th:if="${!navigation.contains('Kết quả tìm kiếm')}">
-            <a th:href="@{/filter(category=series)}"><div th:class="${navigation == 'Phim bộ' ? 'pa-title-item active' : 'pa-title-item'}">Phim bộ mới cập nhật</div></a>
-            <a th:href="@{/filter(category=feature-film)}"><div th:class="${navigation == 'Phim lẻ' ? 'pa-title-item active' : 'pa-title-item'}">Phim lẻ mới cấp nhật</div></a>
-            <a th:href="@{/filter(category=complete)}"><div th:class="${navigation == 'Phim đã hoàn thành' ? 'pa-title-item active' : 'pa-title-item'}">Phim đã hoàn thành</div></a>
-          </div>
-          <div class="row" style="margin-left: 0;margin-right: 0;" >
-            <div class ="movie col-lg-3 col-md-6" th:each="movie : ${movies}">
-              <a href="#">
-                <div class="movie-item text-center">
-                  <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt="" style="object-fit: cover; height: 210px;">
-                  <div class="movie-meta">
-                    <div class="movie-name" th:text="${movie.getTitle()}"></div>
-                    <p class="p1" th:text="'Lượt xem: ' + ${movie.getTotalView()}"></p>
-                  </div>
+                   th:text="${navigation}"></a>
+            </li>
+        </ul>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="list-all-film">
+                    <div class="pa-title" th:if="${!navigation.contains('Kết quả tìm kiếm')}">
+                        <a th:href="@{/filter(category=series)}">
+                            <div th:class="${navigation == 'Phim bộ' ? 'pa-title-item active' : 'pa-title-item'}">Phim
+                                bộ mới cập nhật
+                            </div>
+                        </a>
+                        <a th:href="@{/filter(category=feature-film)}">
+                            <div th:class="${navigation == 'Phim lẻ' ? 'pa-title-item active' : 'pa-title-item'}">Phim
+                                lẻ mới cấp nhật
+                            </div>
+                        </a>
+                        <a th:href="@{/filter(category=complete)}">
+                            <div th:class="${navigation == 'Phim đã hoàn thành' ? 'pa-title-item active' : 'pa-title-item'}">
+                                Phim đã hoàn thành
+                            </div>
+                        </a>
+                    </div>
+                    <div class="row" style="margin-left: 0;margin-right: 0;">
+                        <div class="movie col-lg-3 col-md-6" th:each="movie : ${movies}">
+                            <a href="#">
+                                <div class="movie-item text-center">
+                                    <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt=""
+                                         style="object-fit: cover; height: 210px;">
+                                    <div class="movie-meta">
+                                        <div class="movie-name" th:text="${movie.getTitle()}"></div>
+                                        <p class="p1" th:text="'Lượt xem: ' + ${movie.getTotalView()}"></p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div id="pagination" th:if="${cartoon == null && favorite == null}">
-          <a th:if="${moviesPage.hasPrevious()}"
-             th:href="@{/filter(category=${category}, page=*{0}, size=${moviesPage.size})}">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-          <a th:each="i : ${#numbers.sequence(0, moviesPage.totalPages - 1)}"
-             th:class="${moviesPage.number == i ? 'paitem active' : 'paitem'}"
-             th:href="@{/filter(category=${category}, page=*{i}, size=${moviesPage.size})}"
-             th:text="${i + 1}"></a>
-          <a th:if="${moviesPage.hasNext()}"
-             th:href="@{/filter(category=${category}, page=*{moviesPage.totalPages - 1}, size=${moviesPage.size})}"
-             aria-label="Last">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </div>
+                <div id="pagination" th:if="${cartoon == null && favorite == null && moviesPage.totalPages > 1}">
+                    <a th:if="${moviesPage.hasPrevious()}"
+                       th:href="@{/filter(category=${category}, page=*{0}, size=${moviesPage.size})}">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                    <a th:each="i : ${#numbers.sequence(0, moviesPage.totalPages - 1)}"
+                       th:class="${moviesPage.number == i ? 'paitem active' : 'paitem'}"
+                       th:href="@{/filter(category=${category}, page=*{i}, size=${moviesPage.size})}"
+                       th:text="${i + 1}"></a>
+                    <a th:if="${moviesPage.hasNext()}"
+                       th:href="@{/filter(category=${category}, page=*{moviesPage.totalPages - 1}, size=${moviesPage.size})}"
+                       aria-label="Last">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </div>
 
-        <div class="list-all-film" th:if="${cartoon != null}">
-          <a href="#"><div class="pa-title-item-1">Phim hoạt hình</div></a>
-          <div class="row" style="margin-left: 0;margin-right: 0;">
-            <div class ="movie col-lg-3 col-md-6" th:each="movie : ${cartoon}">
-              <a href="#">
-                <div class="movie-item text-center">
-                  <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt="" style="object-fit: cover; height: 210px;">
-                  <div class="movie-meta">
-                    <div class="movie-name" th:text="${movie.getTitle()}"></div>
-                    <p class="p1" th:text="'Lượt xem: ' + ${movie.getTotalView()}"></p>
-                  </div>
+                <div class="list-all-film" th:if="${cartoon != null}">
+                    <a href="#">
+                        <div class="pa-title-item-1">Phim hoạt hình</div>
+                    </a>
+                    <div class="row" style="margin-left: 0;margin-right: 0;">
+                        <div class="movie col-lg-3 col-md-6" th:each="movie : ${cartoon}">
+                            <a href="#">
+                                <div class="movie-item text-center">
+                                    <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt=""
+                                         style="object-fit: cover; height: 210px;">
+                                    <div class="movie-meta">
+                                        <div class="movie-name" th:text="${movie.getTitle()}"></div>
+                                        <p class="p1" th:text="'Lượt xem: ' + ${movie.getTotalView()}"></p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="list-all-film" th:if="${favorite != null}">
-          <a href="#"><div class="pa-title-item-1">Được yêu thích</div></a>
-          <div class="row" style="margin-left: 0;margin-right: 0;">
-            <div class ="movie col-lg-3 col-md-6" th:each="movie : ${favorite}">
-              <a href="#">
-                <div class="movie-item text-center">
-                  <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt="" style="object-fit: cover; height: 210px;">
-                  <div class="movie-meta">
-                    <div class="movie-name" th:text="${movie.getTitle()}"></div>
-                    <p class="p1" th:text="'Lượt xem: ' + ${movie.getTotalView()}"></p>
-                  </div>
+                <div class="list-all-film" th:if="${favorite != null}">
+                    <a href="#">
+                        <div class="pa-title-item-1">Được yêu thích</div>
+                    </a>
+                    <div class="row" style="margin-left: 0;margin-right: 0;">
+                        <div class="movie col-lg-3 col-md-6" th:each="movie : ${favorite}">
+                            <a href="#">
+                                <div class="movie-item text-center">
+                                    <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt=""
+                                         style="object-fit: cover; height: 210px;">
+                                    <div class="movie-meta">
+                                        <div class="movie-name" th:text="${movie.getTitle()}"></div>
+                                        <p class="p1" th:text="'Lượt xem: ' + ${movie.getTotalView()}"></p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-              </a>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4">
-        <div class="listall">
-          <a href="#"><div class="pa-title-item-2">Phim vừa ra mắt</div></a>
-          <div class="content" th:each="top6Movie : ${top6MoviesNewest}">
-            <a th:title="${top6Movie.getTitle()}">
-              <span class="status" th:text="${top6Movie.getEpisodes().size() + '/' + top6Movie.getTotalEpisode()}">04/??</span>
-              <div class="list-top-movie-item-thumb" th:style="'background-image: url(' + ${top6Movie.getPoster()} + ')'"></div>
-              <div class="list-top-movie-item-info">
-                <span class="list-top-movie-item-vn" th:text="${top6Movie.getTitle()}"></span>
-                <span class="list-top-movie-item-view" th:text="${top6Movie.getReleaseDate()}"></span>
-                <span class="list-top-movie-item-view" th:text="${top6Movie.getTotalView() + ' Lượt xem'}"></span>
-              </div>
-            </a>
-          </div>
-        </div>
+            <div class="col-lg-4">
+                <div class="listall">
+                    <a href="#">
+                        <div class="pa-title-item-2">Phim vừa ra mắt</div>
+                    </a>
+                    <div class="content" th:each="top6Movie : ${top6MoviesNewest}">
+                        <a th:title="${top6Movie.getTitle()}">
+                            <span class="status"
+                                  th:text="${top6Movie.getEpisodes().size() + '/' + top6Movie.getTotalEpisode()}">04/??</span>
+                            <div class="list-top-movie-item-thumb"
+                                 th:style="'background-image: url(' + ${top6Movie.getPoster()} + ')'"></div>
+                            <div class="list-top-movie-item-info">
+                                <span class="list-top-movie-item-vn" th:text="${top6Movie.getTitle()}"></span>
+                                <span class="list-top-movie-item-view" th:text="${top6Movie.getReleaseDate()}"></span>
+                                <span class="list-top-movie-item-view"
+                                      th:text="${top6Movie.getTotalView() + ' Lượt xem'}"></span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
 
-      </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <footer>
-    <div class="container">
-      <div class="row justify-content-between">
-        <div class="col-auto">
-          <p>Copyrights @Tổ 5. All Rights reserved</p>
+    <footer>
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-auto">
+                    <p>Copyrights @Tổ 5. All Rights reserved</p>
+                </div>
+                <div class="col-auto">
+                    <p>Designed by <a href="#">Movie System</a></p>
+                </div>
+            </div>
         </div>
-        <div class="col-auto">
-          <p>Designed by <a href="#">Movie System</a></p>
-        </div>
-      </div>
-    </div>
-  </footer>
+    </footer>
 </div>
 <div id="login" class="bg-img">
-  <div class="contenlogin">
-    <input type="button" class="close" value="X">
-    <script Language="javascript">
-      const btn = document.querySelector('.close');
-      const btno = document.querySelector('.openl');
-      const tat = document.querySelector('.bg-img');
-      const bd = document.querySelector('.fbody');
-      btn.addEventListener('click', function(){
-        tat.style.display="none";
-        bd.style.opacity="1";
-      })
-      btno.addEventListener('click', function(){
-        tat.style.display="block";
-        bd.style.opacity="0.1";
-        bd.style.transition="0.7s";
-      })
-    </script>
-    <header>Login Form</header>
-    <form action="#">
-      <div class="field">
-        <span class="fa fa-user"></span>
-        <label for="email_or_phone">
-          <input id="email_or_phone" type="text" required placeholder="Email or Phone">
-        </label>
-      </div>
-      <div class="field space">
-        <span class="fa fa-lock"></span>
-        <label for="password">
-          <input id="password" type="password" class="pass-key" required placeholder="Password">
-        </label>
-        <span class="show">SHOW</span>
-      </div>
-      <div class="pass">
-        <a href="#">Forgot Password?</a>
-      </div>
-      <div class="field">
-        <input type="submit" value="LOGIN">
-      </div>
-    </form>
-    <div class="login">Or login with</div>
-    <div class="links">
-      <div class="facebook">
-        <i class="fab fa-facebook-f"><span>Facebook</span></i>
-      </div>
-      <div class="instagram">
-        <i class="fab fa-instagram"><span>Instagram</span></i>
-      </div>
+    <div class="contenlogin">
+        <input type="button" class="close" value="X">
+        <script Language="javascript">
+            const btn = document.querySelector('.close');
+            const btno = document.querySelector('.openl');
+            const tat = document.querySelector('.bg-img');
+            const bd = document.querySelector('.fbody');
+            btn.addEventListener('click', function () {
+                tat.style.display = "none";
+                bd.style.opacity = "1";
+            })
+            btno.addEventListener('click', function () {
+                tat.style.display = "block";
+                bd.style.opacity = "0.1";
+                bd.style.transition = "0.7s";
+            })
+        </script>
+        <header>Login Form</header>
+        <form action="#">
+            <div class="field">
+                <span class="fa fa-user"></span>
+                <label for="email_or_phone">
+                    <input id="email_or_phone" type="text" required placeholder="Email or Phone">
+                </label>
+            </div>
+            <div class="field space">
+                <span class="fa fa-lock"></span>
+                <label for="password">
+                    <input id="password" type="password" class="pass-key" required placeholder="Password">
+                </label>
+                <span class="show">SHOW</span>
+            </div>
+            <div class="pass">
+                <a href="#">Forgot Password?</a>
+            </div>
+            <div class="field">
+                <input type="submit" value="LOGIN">
+            </div>
+        </form>
+        <div class="login">Or login with</div>
+        <div class="links">
+            <div class="facebook">
+                <i class="fab fa-facebook-f"><span>Facebook</span></i>
+            </div>
+            <div class="instagram">
+                <i class="fab fa-instagram"><span>Instagram</span></i>
+            </div>
+        </div>
+        <div class="signup">Don't have account?
+            <input type="button" class="changes" value="Sign Up">
+        </div>
     </div>
-    <div class="signup">Don't have account?
-      <input type="button" class="changes" value="Sign Up">
-    </div>
-  </div>
 </div>
 
 <script>
-  const pass_field = document.querySelector('.pass-key');
-  const showBtn = document.querySelector('.show');
-  showBtn.addEventListener('click', function(){
-    if(pass_field.type === "password"){
-      pass_field.type = "text";
-      showBtn.textContent = "HIDE";
-      showBtn.style.color = "#3498db";
-    }else{
-      pass_field.type = "password";
-      showBtn.textContent = "SHOW";
-      showBtn.style.color = "#222";
-    }
-  });
+    const pass_field = document.querySelector('.pass-key');
+    const showBtn = document.querySelector('.show');
+    showBtn.addEventListener('click', function () {
+        if (pass_field.type === "password") {
+            pass_field.type = "text";
+            showBtn.textContent = "HIDE";
+            showBtn.style.color = "#3498db";
+        } else {
+            pass_field.type = "password";
+            showBtn.textContent = "SHOW";
+            showBtn.style.color = "#222";
+        }
+    });
 </script>
 
 
 <div id="signup" class="bg-img-si">
-  <div class="contensignup">
-    <input type="button" class="closes" value="X">
-    <script Language="javascript">
-      const btn1 = document.querySelector('.closes');
-      const btns = document.querySelector('.opens');
-      const tat1 = document.querySelector('.bg-img-si');
-      btn1.addEventListener('click', function(){
-        tat1.style.display="none";
-        bd.style.opacity="1";
-      })
-      btns.addEventListener('click', function(){
-        tat1.style.display="block";
-        bd.style.opacity="0.1";
-        bd.style.transition="0.7s";
-      })
-    </script>
-    <header>Sign Up Form</header>
-    <form action="#">
-      <div class="field">
-        <span class="fa fa-user"></span>
-        <label for="emailOrPhone">
-          <input id="emailOrPhone" type="text" required placeholder="Email or Phone">
-        </label>
-      </div>
-      <div class="field space">
-        <span class="fa fa-lock"></span>
-        <label for="pass">
-          <input id="pass" type="password" class="pass-key" required placeholder="Password">
-        </label>
-        <span class="show">SHOW</span>
-      </div>
-      <div class="field space">
-        <span class="fa fa-lock"></span>
-        <label for="confirm_pass">
-          <input id="confirm_pass" type="password" class="pass-key" required placeholder="Confirm Your Password">
-        </label>
-        <span class="show">SHOW</span>
-      </div>
-      <div class="field" style="margin: 15px 0;">
-        <input type="submit" value="SIGN UP">
-      </div>
-    </form>
-    <div class="signup">Have account?
-      <input type="button" class="changel" value="Login">
-      <script Language="javascript">
-        const btnchangel = document.querySelector('.changel');
-        btnchangel.addEventListener('click', function(){
-          tat1.style.display="none";
-          tat.style.display="block";
-        })
-        const btnchanges = document.querySelector('.changes');
-        btnchanges.addEventListener('click', function(){
-          tat.style.display="none";
-          tat1.style.display="block";
-        })
-      </script>
+    <div class="contensignup">
+        <input type="button" class="closes" value="X">
+        <script Language="javascript">
+            const btn1 = document.querySelector('.closes');
+            const btns = document.querySelector('.opens');
+            const tat1 = document.querySelector('.bg-img-si');
+            btn1.addEventListener('click', function () {
+                tat1.style.display = "none";
+                bd.style.opacity = "1";
+            })
+            btns.addEventListener('click', function () {
+                tat1.style.display = "block";
+                bd.style.opacity = "0.1";
+                bd.style.transition = "0.7s";
+            })
+        </script>
+        <header>Sign Up Form</header>
+        <form action="#">
+            <div class="field">
+                <span class="fa fa-user"></span>
+                <label for="emailOrPhone">
+                    <input id="emailOrPhone" type="text" required placeholder="Email or Phone">
+                </label>
+            </div>
+            <div class="field space">
+                <span class="fa fa-lock"></span>
+                <label for="pass">
+                    <input id="pass" type="password" class="pass-key" required placeholder="Password">
+                </label>
+                <span class="show">SHOW</span>
+            </div>
+            <div class="field space">
+                <span class="fa fa-lock"></span>
+                <label for="confirm_pass">
+                    <input id="confirm_pass" type="password" class="pass-key" required
+                           placeholder="Confirm Your Password">
+                </label>
+                <span class="show">SHOW</span>
+            </div>
+            <div class="field" style="margin: 15px 0;">
+                <input type="submit" value="SIGN UP">
+            </div>
+        </form>
+        <div class="signup">Have account?
+            <input type="button" class="changel" value="Login">
+            <script Language="javascript">
+                const btnchangel = document.querySelector('.changel');
+                btnchangel.addEventListener('click', function () {
+                    tat1.style.display = "none";
+                    tat.style.display = "block";
+                })
+                const btnchanges = document.querySelector('.changes');
+                btnchanges.addEventListener('click', function () {
+                    tat.style.display = "none";
+                    tat1.style.display = "block";
+                })
+            </script>
+        </div>
     </div>
-  </div>
 </div>
 </body>
 

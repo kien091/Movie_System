@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 @Service
@@ -74,15 +75,11 @@ public class MovieService {
 
     public List<String> getAllGenres(){
         List<String> genres = movieRepository.getAllGenres();
-        List<String> handleGenres = new ArrayList<>();
-
-        for (String genre : genres) {
-            String[] splitGenres = genre.split("[-,]");
-            for(String genreString : splitGenres)
-                handleGenres.add(WordUtils.capitalize(genreString.trim()));
-        }
-
-        return new ArrayList<>(new LinkedHashSet<>(handleGenres));
+        return genres.stream()
+                .flatMap(genre -> Arrays.stream(genre.split("[-,]")))
+                .map(genreString -> WordUtils.capitalize(genreString.trim()))
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public List<String> getAllReleaseDate(){
@@ -93,6 +90,17 @@ public class MovieService {
         }
 
         return new ArrayList<>(year);
+    }
+
+    public List<String> getAllNation(){
+        List<String> nations = movieRepository.getAllNation();
+        List<String> handleNations = new ArrayList<>();
+
+        for (String nation : nations) {
+            handleNations.add(WordUtils.capitalize(nation.trim()));
+        }
+
+        return new ArrayList<>(new LinkedHashSet<>(handleNations));
     }
 
     private String getYearFromDateString(String dateString) {
@@ -111,12 +119,32 @@ public class MovieService {
     }
 
     public Page<Movie> filterMoviesByCategory(String category, Pageable pageable) {
-        List<Movie> movies = switch (category) {
-            case "series" -> movieRepository.findMoviesSeries();
-            case "feature-film" -> movieRepository.findFeatureMovies();
-            case "complete" -> movieRepository.findMoviesComplete();
-            default -> movieRepository.findAll();
-        };
+        List<Movie> movies = new ArrayList<>();
+        if(getAllGenres().contains(category)){
+            movies = movieRepository.findMoviesByGenre(category);
+        } else if (getAllReleaseDate().contains(category)) {
+            movies = movieRepository.findAll()
+                    .stream()
+                    .filter(movie -> getYearFromDateString(movie.getReleaseDate()).equals(category))
+                    .toList();
+        } else if (getAllNation().contains(category)) {
+            movies = movieRepository.findAll()
+                    .stream()
+                    .filter(movie -> movie.getNation().toLowerCase().contains(category.toLowerCase()))
+                    .toList();
+
+        } else {
+            movies = switch (category) {
+                case "series" -> movieRepository.findMoviesSeries();
+                case "feature-film" -> movieRepository.findFeatureMovies();
+                case "complete" -> movieRepository.findMoviesComplete();
+                case "english-language-films" -> movieRepository.findAll()
+                        .stream()
+                        .filter(movie -> movie.getGenre().toLowerCase().contains("chiếu rạp"))
+                        .toList();
+                default -> movieRepository.findAll();
+            };
+        }
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), movies.size());

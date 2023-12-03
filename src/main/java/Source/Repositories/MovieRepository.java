@@ -21,6 +21,9 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
     @Query(value = "SELECT DISTINCT release_date FROM movie", nativeQuery = true)
     List<String> getAllReleaseDate();
 
+    @Query(value = "SELECT DISTINCT lower(nation) FROM movie", nativeQuery = true)
+    List<String> getAllNation();
+
     @Query(value = "SELECT * FROM movie ORDER BY movie_id DESC LIMIT 6", nativeQuery = true)
     List<Movie> findTop6MoviesByOrderByMovieIdDesc();
 

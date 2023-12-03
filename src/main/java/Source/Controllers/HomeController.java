@@ -43,6 +43,7 @@ public class HomeController {
 
         model.addAttribute("genres", movieService.getAllGenres());
         model.addAttribute("releaseDates", movieService.getAllReleaseDate());
+        model.addAttribute("nations", movieService.getAllNation());
         model.addAttribute("top6MoviesNewest", movieService.top6NewestMovies());
         return "home";
     }
@@ -53,22 +54,15 @@ public class HomeController {
                            @RequestParam(name = "size", defaultValue = "16") int size,
                            Model model){
         Pageable pageable = PageRequest.of(page, size);
-        Page<Movie> moviePage;
-        if(!category.equals("search")){
-            moviePage = movieService.filterMoviesByCategory(category, pageable);
-            String navigation = switch (category) {
-                case "series" -> "Phim bộ";
-                case "feature-film" -> "Phim lẻ";
-                case "complete" -> "Phim đã hoàn thành";
-                default -> category;
-            };
-            model.addAttribute("navigation", navigation);
-        }
-        else{
-            List<Movie> movies = (List<Movie>) model.getAttribute("movies");
-            assert movies != null;
-            moviePage = new PageImpl<>(movies, pageable, movies.size());
-        }
+        Page<Movie> moviePage = movieService.filterMoviesByCategory(category, pageable);
+        String navigation = switch (category) {
+            case "series" -> "Phim bộ";
+            case "feature-film" -> "Phim lẻ";
+            case "complete" -> "Phim đã hoàn thành";
+            case "english-language-films" -> "Phim chiếu rạp";
+            default -> category;
+        };
+        model.addAttribute("navigation", navigation);
 
         model.addAttribute("movies", moviePage.getContent());
         model.addAttribute("moviesPage", moviePage);
@@ -82,6 +76,7 @@ public class HomeController {
 
         model.addAttribute("genres", movieService.getAllGenres());
         model.addAttribute("releaseDates", movieService.getAllReleaseDate());
+        model.addAttribute("nations", movieService.getAllNation());
         model.addAttribute("top6MoviesNewest", movieService.top6NewestMovies());
         return "home";
     }
