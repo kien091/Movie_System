@@ -5,25 +5,20 @@ import Source.Models.User;
 import Source.Services.EmailService;
 import Source.Services.MovieService;
 import Source.Services.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Properties;
+import java.util.stream.Collectors;
 
-@SuppressWarnings("CallToPrintStackTrace")
 @Controller
 @RequestMapping("/")
 public class HomeController {
@@ -44,10 +39,16 @@ public class HomeController {
         List<Movie> movies = movieService.findAll()
                 .stream()
                 .filter(movie -> movie.getTotalEpisode() > 1)
-                .toList();
+                .sorted((movie1, movie2) -> Integer.compare(movie2.getTotalView(), movie1.getTotalView()))
+                .limit(16)
+                .collect(Collectors.toList());
         model.addAttribute("movies", movies);
 
-        List<Movie> cartoon = movieService.findMoviesByGenre("Hoạt hình");
+        List<Movie> cartoon = movieService.findMoviesByGenre("Hoạt hình")
+                .stream()
+                .sorted((movie1, movie2) -> Integer.compare(movie2.getTotalView(), movie1.getTotalView()))
+                .limit(16)
+                .collect(Collectors.toList());
         model.addAttribute("cartoon", cartoon);
 
         List<Movie> favorite = movieService.findTop16ByOrderByTotalViewDesc();
@@ -59,8 +60,9 @@ public class HomeController {
         model.addAttribute("releaseDates", movieService.getAllReleaseDate());
         model.addAttribute("nations", movieService.getAllNation());
         model.addAttribute("top6MoviesNewest", movieService.top6NewestMovies());
-        if(session.getAttribute("user") == null)
+        if(session.getAttribute("user") == null && session.getAttribute("user_storage") == null){
             model.addAttribute("showLogin", true);
+        }
         return "home";
     }
 
@@ -165,8 +167,13 @@ public class HomeController {
                         @RequestParam("password") String password,
                         Model model, HttpSession session){
         User user = new User(email, password);
-        if(userService.authenticateUser(user)){
-            session.setAttribute("user", user);
+        User foundUser = userService.findAll()
+                .stream()
+                .filter(u -> u.getEmail().equals(user.getEmail()))
+                .findFirst()
+                .orElse(null);
+        if(userService.authenticateUser(user) && foundUser != null){
+            session.setAttribute("user", foundUser);
         } else {
             model.addAttribute("error", "Email hoặc mật khẩu không đúng");
         }
@@ -209,6 +216,87 @@ public class HomeController {
 
         String subject = "Bạn vừa yêu cầu đặt lại mật khẩu";
         String body = "Mật khẩu mới của bạn là: " + newPassword;
-        emailService.sendEmail(from, email,subject, body);
+        try {
+            emailService.sendEmail(from, email,subject, body);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping(value = "/register")
+    public String register(@RequestParam("email") String email,
+                           @RequestParam("password") String password,
+                           @RequestParam("confirmPassword") String confirmPassword,
+                           Model model, HttpSession session){
+        User userCheck = userService.findAll()
+                .stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
+
+        if(userCheck != null){
+            model.addAttribute("error_register", "Email đã được đăng kí");
+            model.addAttribute("showRegister", true);
+            model.addAttribute("showReset", false);
+        }
+        else if(!password.equals(confirmPassword)){
+            model.addAttribute("error_register", "Mật khẩu không khớp");
+            model.addAttribute("showRegister", true);
+        } else {
+            model.addAttribute("showOTP", true);
+            User user = new User("user", password,
+                    "/img/user.png", email, "user", false);
+
+            session.setAttribute("user_storage", user);
+
+            StringBuilder otp = new StringBuilder();
+            for(int i = 0; i < 6; i++){
+                otp.append((int) (Math.random() * 10));
+            }
+            session.setAttribute("otp", otp.toString());
+
+            verifyEmail(email, otp.toString());
+        }
+        return viewHome(model, session);
+    }
+    private void verifyEmail(String email, String otp) {
+        String from = "nguyntrungkin091@gmail.com";
+
+        String subject = "Yêu cầu mã xác thực tài khoản";
+        String body = "Mã xác thực tài khoản của bạn là: " + otp;
+        try {
+            emailService.sendEmail(from, email,subject, body);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping(value = "/code")
+    public String verifyCode(@RequestParam("countdown") String countdown,
+                            @RequestParam("code") String code,
+                            Model model, HttpSession session){
+        String otp = (String) session.getAttribute("otp");
+        if(code.equals(otp) && !countdown.equals("0")){
+            User user = (User) session.getAttribute("user_storage");
+
+            // remove session
+            session.removeAttribute("user_storage");
+            session.removeAttribute("otp");
+
+            BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+            String bcryptPassword = bcrypt.encode(user.getPassword());
+            user.setPassword(bcryptPassword);
+            userService.save(user);
+            session.setAttribute("user", user);
+        } else {
+            model.addAttribute("error_code", "Mã xác thực không đúng hoặc đã hết hạn");
+        }
+        return viewHome(model, session);
+    }
+
+    @GetMapping(value = "/logout")
+    public String logout(Model model, HttpSession session){
+        session.removeAttribute("user");
+        return viewHome(model, session);
     }
 }

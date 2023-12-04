@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--suppress HtmlDeprecatedAttribute, XmlDuplicatedId -->
+<!--suppress ALL -->
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -32,7 +32,7 @@
             white-space: nowrap;
         }
 
-        .close-forgot{
+        .close-forgot, .close-otp{
             position: absolute;
             top: 0;
             right: 0;
@@ -43,10 +43,50 @@
             box-sizing: border-box;
         }
 
-        .close-forgot:hover{
+        .close-forgot:hover, .close-forgot:hover{
             background-color: #3498db;
             color: #242628;
-            transition: 0.7s;
+        }
+
+        .user-avatar {
+            position: relative;
+        }
+
+        .user-avatar img {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #1e2122;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            z-index: 1;
+            right: 0;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: right;
+            text-align: center;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #1e2122;
+            color: #d28c19;
+        }
+
+        .user-avatar:hover .dropdown-content {
+            display: block;
         }
     </style>
 </head>
@@ -66,10 +106,36 @@
                 </label>
                 <button class="btn btn-outline-light" type="submit">Search</button>
             </form>
-            <div class="dndk">
+            <div class="dndk" th:if="${session.user == null}">
                 <input class="btn btn-outline-light openl" id="bt" type="button" value="Login">
                 <input class="btn btn-outline-light opens" id="btn2" type="button" value="Sign Up">
             </div>
+            <div class="user-avatar" id="userAvatar" th:if="${session.user != null}" style="cursor: pointer;">
+                <img th:src="${session.user.getAvatar()}" alt="User Avatar" style="height: 40px; width: 40px; border-radius: 50%;">
+                <div class="dropdown-content" id="dropdownContent" style="z-index: 999999">
+                    <a href="#">Profile</a>
+                    <a th:href="@{/logout}">Logout</a>
+                </div>
+            </div>
+
+            <script>
+                function toggleDropdown() {
+                    var dropdown = document.getElementById("dropdownContent");
+                    dropdown.classList.toggle("show");
+                }
+
+                window.onclick = function(event) {
+                    if (!event.target.matches('.user-avatar')) {
+                        var dropdowns = document.getElementsByClassName("dropdown-content");
+                        for (var i = 0; i < dropdowns.length; i++) {
+                            var openDropdown = dropdowns[i];
+                            if (openDropdown.classList.contains('show')) {
+                                openDropdown.classList.remove('show');
+                            }
+                        }
+                    }
+                }
+            </script>
         </div>
     </nav>
 
@@ -324,26 +390,25 @@
             btno.addEventListener('click', function () {
                 tat.style.display = "block";
                 bd.style.opacity = "0.1";
-                bd.style.transition = "0.7s";
             })
 
             const showLogin = /*[[${showLogin}]]*/ false;
             if(showLogin){
                 tat.style.display = "block";
                 bd.style.opacity = "0.1";
-                bd.style.transition = "0.7s";
             }
             function hideLogin() {
                 tat.style.display = "none";
                 bd.style.opacity = "1";
             }
+            /*]]>*/
         </script>
         <header>Login</header>
         <form th:action="@{/login}" method="post">
             <div class="field">
                 <span class="fa fa-user"></span>
-                <label for="email" style="width: 266px;">
-                    <input id="email" name="email" type="text" required placeholder="Email">
+                <label for="email-login" style="width: 266px;">
+                    <input id="email-login" name="email" type="text" required placeholder="Email">
                 </label>
             </div>
             <div class="field space">
@@ -388,7 +453,7 @@
 <div id="signup" class="bg-img-si">
     <div class="contensignup">
         <input type="button" class="closes" value="X">
-        <script Language="javascript">
+        <script th:inline="javascript">
             const btn1 = document.querySelector('.closes');
             const btns = document.querySelector('.opens');
             const tat1 = document.querySelector('.bg-img-si');
@@ -399,36 +464,47 @@
             btns.addEventListener('click', function () {
                 tat1.style.display = "block";
                 bd.style.opacity = "0.1";
-                bd.style.transition = "0.7s";
             })
+
+            /*<![CDATA[*/
+            const showRegister = /*[[${showRegister}]]*/ false;
+            if(showRegister){
+                hideLogin()
+                tat1.style.display = "block";
+                bd.style.opacity = "0.1";
+            }
             function hideSignup() {
                 tat1.style.display = "none";
                 bd.style.opacity = "1";
             }
+            /*]]>*/
         </script>
         <header>Sign Up</header>
-        <form action="#">
+        <form th:action="@{/register}" method="post">
             <div class="field">
                 <span class="fa fa-user"></span>
-                <label for="email" style="width: 266px;">
-                    <input id="email" type="text" required placeholder="Email">
+                <label for="email-register" style="width: 266px;">
+                    <input id="email-register" name="email" type="text" required placeholder="Email">
                 </label>
             </div>
             <div class="field space">
                 <span class="fa fa-lock"></span>
                 <label for="pass" style="width: 266px;">
-                    <input id="pass" type="password" class="pass-key" required placeholder="Password">
+                    <input id="pass" name="password" type="password" class="pass-key" required placeholder="Password">
                 </label>
                 <span class="show">SHOW</span>
             </div>
             <div class="field space">
                 <span class="fa fa-lock"></span>
                 <label for="confirm_pass" style="width: 266px;">
-                    <input id="confirm_pass" type="password" class="pass-key" required
+                    <input id="confirm_pass" name="confirmPassword" type="password" class="pass-key" required
                            placeholder="Confirm Your Password">
                 </label>
                 <span class="show">SHOW</span>
             </div>
+            <div class="error-register" style="color: red; margin-bottom: 10px;"
+                 th:if="${error_register != null}"
+                 th:text="${error_register}"></div>
             <div class="field" style="margin: 15px 0;">
                 <input type="submit" value="SIGN UP">
             </div>
@@ -464,26 +540,26 @@
             })
             const show_Reset = /*[[${showReset}]]*/ false;
             if(show_Reset){
-                showReset();
+                showReset()
             }
             function showReset() {
                 hideLogin()
                 hideSignup()
                 display_forgot.style.display = "block";
                 bd.style.opacity = "0.1";
-                bd.style.transition = "0.7s";
             }
             function hideReset() {
                 display_forgot.style.display = "none";
                 bd.style.opacity = "1";
             }
+            /*]]>*/
         </script>
         <header>Reset Password</header>
         <form th:action="@{/reset}" method="post">
             <div class="field">
                 <span class="fa fa-user"></span>
-                <label for="email" style="width: 266px;">
-                    <input id="email" name="email" type="text" required placeholder="Email">
+                <label for="email-reset" style="width: 266px;">
+                    <input id="email-reset" name="email" type="text" required placeholder="Email">
                 </label>
             </div>
             <div class="reset-password-message" style="color: green; margin-bottom: 10px;"
@@ -494,6 +570,90 @@
                 <input type="submit" value="SEND PASSWORD">
             </div>
         </form>
+    </div>
+</div>
+
+<div id="otp" class="bg-img-otp" style="display: none;">
+    <div class="contensignup">
+        <input type="button" class="close-otp" value="X">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            const btn_otp= document.querySelector('.close-otp');
+            const display_otp = document.querySelector('.bg-img-otp');
+            btn_otp.addEventListener('click', function () {
+                display_otp.style.display = "none";
+                bd.style.opacity = "1";
+            })
+            const show_otp = /*[[${showOTP}]]*/ false;
+            if(show_otp){
+                showOtp()
+            }
+            function showOtp() {
+                hideLogin()
+                hideSignup()
+                display_otp.style.display = "block";
+                bd.style.opacity = "0.1";
+            }
+            function hideOtp() {
+                display_otp.style.display = "none";
+                bd.style.opacity = "1";
+            }
+            /*]]>*/
+        </script>
+        <header>Verification</header>
+        <form id="verificationForm" th:action="@{/code}" method="post" onsubmit="submitForm()">
+            <div class="countdown">
+                <div class="countdown" id="countdown">Thời gian xác thực còn lại: </div>
+            </div>
+            <div class="field">
+                <span class="fa-solid fa-envelope"></span>
+                <label for="code" style="width: 266px;">
+                    <input id="code" name="code" type="text" required placeholder="OTP Code">
+                </label>
+            </div>
+            <div class="confirm-code" style="color: red; margin-bottom: 10px;"
+                 th:if="${error_code != null}"
+                 th:text="${error_code}"></div>
+            <div class="field" style="margin: 15px 0;">
+                <input type="submit" value="VERIFICATION">
+            </div>
+        </form>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var countdownValue = 180;
+
+            function updateCountdown() {
+                var countdownElement = document.getElementById('countdown');
+                countdownElement.innerHTML = 'Thời gian xác thực còn lại: ' + formatCountdown(countdownValue);
+                countdownValue--;
+
+                if (countdownValue >= 0) {
+                    setTimeout(updateCountdown, 1000);
+                }
+            }
+
+            function formatCountdown(seconds) {
+                var minutes = Math.floor(seconds / 60);
+                var remainingSeconds = seconds % 60;
+                return minutes + ':' + (remainingSeconds < 10 ? '0' : '') + remainingSeconds;
+            }
+
+            function submitForm() {
+                var form = document.getElementById('verificationForm');
+
+                var countdownField = document.createElement('input');
+                countdownField.type = 'hidden';
+                countdownField.name = 'countdown';
+                countdownField.value = countdownValue;
+                form.appendChild(countdownField);
+
+                return true;
+            }
+
+            updateCountdown();
+            /*]]>*/
+        </script>
     </div>
 </div>
 </body>
