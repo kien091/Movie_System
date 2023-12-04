@@ -63,7 +63,7 @@
             position: absolute;
             background-color: #1e2122;
             min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
             padding: 12px 16px;
             z-index: 1;
             right: 0;
@@ -76,7 +76,6 @@
             display: block;
             width: 100%;
             box-sizing: border-box;
-            text-align: right;
             text-align: center;
         }
 
@@ -119,16 +118,11 @@
             </div>
 
             <script>
-                function toggleDropdown() {
-                    var dropdown = document.getElementById("dropdownContent");
-                    dropdown.classList.toggle("show");
-                }
-
                 window.onclick = function(event) {
                     if (!event.target.matches('.user-avatar')) {
-                        var dropdowns = document.getElementsByClassName("dropdown-content");
-                        for (var i = 0; i < dropdowns.length; i++) {
-                            var openDropdown = dropdowns[i];
+                        const dropdowns = document.getElementsByClassName("dropdown-content");
+                        for (let i = 0; i < dropdowns.length; i++) {
+                            const openDropdown = dropdowns[i];
                             if (openDropdown.classList.contains('show')) {
                                 openDropdown.classList.remove('show');
                             }
@@ -173,7 +167,7 @@
         <div class="swiper mySwiper">
             <div class="swiper-wrapper">
                 <div class="swiper-slide" th:each="movie : ${carousel}">
-                    <a href="#">
+                    <a th:href="@{/information(movie_id=${movie.getMovieId()})}">
                         <img th:src="${movie.getPoster()}" alt="Image 1" style="height: 210px;">
                     </a></div>
             </div>
@@ -267,7 +261,7 @@
                     </div>
                     <div class="row" style="margin-left: 0;margin-right: 0;">
                         <div class="movie col-lg-3 col-md-6" th:each="movie : ${movies}">
-                            <a href="#">
+                            <a th:href="@{/information(movie_id=${movie.getMovieId()})}">
                                 <div class="movie-item text-center">
                                     <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt=""
                                          style="object-fit: cover; height: 210px;">
@@ -302,7 +296,7 @@
                     </a>
                     <div class="row" style="margin-left: 0;margin-right: 0;">
                         <div class="movie col-lg-3 col-md-6" th:each="movie : ${cartoon}">
-                            <a href="#">
+                            <a th:href="@{/information(movie_id=${movie.getMovieId()})}">
                                 <div class="movie-item text-center">
                                     <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt=""
                                          style="object-fit: cover; height: 210px;">
@@ -321,7 +315,7 @@
                     </a>
                     <div class="row" style="margin-left: 0;margin-right: 0;">
                         <div class="movie col-lg-3 col-md-6" th:each="movie : ${favorite}">
-                            <a href="#">
+                            <a th:href="@{/information(movie_id=${movie.getMovieId()})}">
                                 <div class="movie-item text-center">
                                     <img class="imgh img-fluid" th:src="${movie.getPoster()}" alt=""
                                          style="object-fit: cover; height: 210px;">
@@ -340,8 +334,9 @@
                     <a href="#">
                         <div class="pa-title-item-2">Phim vừa ra mắt</div>
                     </a>
-                    <div class="content" th:each="top6Movie : ${top6MoviesNewest}">
-                        <a th:title="${top6Movie.getTitle()}">
+                    <div class="content" th:each="top6Movie : ${top6MoviesNewest}" style="margin: 5px 0 5px 0;">
+                        <a th:title="${top6Movie.getTitle()}"
+                           th:href="@{/information(movie_id=${top6Movie.getMovieId()})}">
                             <span class="status"
                                   th:text="${top6Movie.getEpisodes().size() + '/' + top6Movie.getTotalEpisode()}">04/??</span>
                             <div class="list-top-movie-item-thumb"
@@ -356,7 +351,6 @@
                         <br>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -511,7 +505,7 @@
         </form>
         <div class="signup">Have account?
             <input type="button" class="changel" value="Login">
-            <script Language="javascript">
+            <script th:inline="javascript">
                 const btnchangel = document.querySelector('.changel');
                 btnchangel.addEventListener('click', function () {
                     tat1.style.display = "none";
@@ -621,10 +615,10 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
-            var countdownValue = 180;
+            let countdownValue = 180;
 
             function updateCountdown() {
-                var countdownElement = document.getElementById('countdown');
+                const countdownElement = document.getElementById('countdown');
                 countdownElement.innerHTML = 'Thời gian xác thực còn lại: ' + formatCountdown(countdownValue);
                 countdownValue--;
 
@@ -634,15 +628,15 @@
             }
 
             function formatCountdown(seconds) {
-                var minutes = Math.floor(seconds / 60);
-                var remainingSeconds = seconds % 60;
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
                 return minutes + ':' + (remainingSeconds < 10 ? '0' : '') + remainingSeconds;
             }
 
             function submitForm() {
-                var form = document.getElementById('verificationForm');
+                const form = document.getElementById('verificationForm');
 
-                var countdownField = document.createElement('input');
+                const countdownField = document.createElement('input');
                 countdownField.type = 'hidden';
                 countdownField.name = 'countdown';
                 countdownField.value = countdownValue;
