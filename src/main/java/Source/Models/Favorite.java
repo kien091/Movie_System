@@ -22,4 +22,9 @@ public class Favorite {
     @ManyToOne
     @JoinColumn(name = "movieId")
     private Movie movie;
+
+    public Favorite(User user, Movie movie) {
+        this.user = user;
+        this.movie = movie;
+    }
 }

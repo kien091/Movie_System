@@ -142,6 +142,14 @@ public class MovieService {
                         .stream()
                         .filter(movie -> movie.getGenre().toLowerCase().contains("chiếu rạp"))
                         .toList();
+                case "favorite" -> {
+                    List<Movie> favorite = movieRepository.findAll()
+                            .stream()
+                            .filter(movie -> movie.getTotalView() > 2000)
+                            .toList();
+
+                    yield favorite.size() > 16 ? favorite : movieRepository.findTop16ByOrderByTotalViewDesc();
+                }
                 default -> movieRepository.findAll();
             };
         }

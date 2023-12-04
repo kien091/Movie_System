@@ -78,6 +78,7 @@ public class HomeController {
             case "feature-film" -> "Phim lẻ";
             case "complete" -> "Phim đã hoàn thành";
             case "english-language-films" -> "Phim chiếu rạp";
+            case "favorite" -> "Phim yêu thích";
             default -> category;
         };
         model.addAttribute("navigation", navigation);

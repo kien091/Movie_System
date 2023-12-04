@@ -52,7 +52,7 @@
             right: 0;
         }
 
-        .dropdown-content a {
+        .dropdown-content span {
             color: white;
             padding: 12px 16px;
             text-decoration: none;
@@ -62,7 +62,7 @@
             text-align: center;
         }
 
-        .dropdown-content a:hover {
+        .dropdown-content span:hover {
             background-color: #1e2122;
             color: #d28c19;
         }
@@ -103,8 +103,14 @@
                 <img th:src="${session.user.getAvatar()}" alt="User Avatar"
                      style="height: 40px; width: 40px; border-radius: 50%;">
                 <div class="dropdown-content" id="dropdownContent" style="z-index: 999999">
-                    <a href="#">Profile</a>
-                    <a th:href="@{/logout}">Logout</a>
+                    <span>
+                        <i class="fa-regular fa-user"></i>
+                        <a href="#">Profile</a>
+                    </span>
+                    <span>
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <a th:href="@{/logout}">Logout</a>
+                    </span>
                 </div>
             </div>
 
@@ -175,8 +181,19 @@
                         <div class="inf-avt-link-item-img">
                             <a><img class="imgh" alt="Poster" th:src="${movie.getPoster()}"></a>
                             <div class="inf-btn">
-                                <button class="btn btn-success btnpd">Yêu thích</button> <!-- change this -->
-                                <button class="btn btn-danger btnpd">Xem phim</button> <!-- change this -->
+                                <form th:action="@{/information/favorite}"
+                                      method="get">
+                                    <input type="hidden" name="movie_id" th:value="${movie.getMovieId()}">
+                                    <button class="btn btn-success btnpd" type="submit"
+                                            th:if="${!checkFavorite}">Yêu thích</button>
+                                    <button class="btn btn-danger btnpd" type="submit"
+                                            th:if="${checkFavorite}">Bỏ thích</button>
+                                </form>
+                                <form th:action="@{/watch}"
+                                      method="get">
+                                    <input type="hidden" name="episode_id" th:value="${movie.getEpisodes().get(0).getEpisodeId()}">
+                                    <button type="submit" class="btn btn-primary btnpd">Xem phim</button>
+                                </form>
                             </div>
                         </div>
                         <div class="inf-avt-link-item">
@@ -192,7 +209,7 @@
                                 <p th:text="'Số tập: ' + ${movie.getTotalEpisode()}"></p>
                                 <p th:text="'Tình trạng: ' + (${movie.getTotalEpisode() == movie.getEpisodes().size()} ? 'Đã hoàn thành' : 'Phim đang chiếu')"></p>
                                 <p th:text="'Ngôn ngữ: Phụ đề Việt'"></p>
-                                <p th:text="'Năm sản xuất' + ${movie.getReleaseDate()}"></p>
+                                <p th:text="'Năm sản xuất: ' + ${movie.getReleaseDate()}"></p>
                                 <p th:text="'Quốc gia: ' + ${movie.getNation()}"></p>
                                 <p th:text="'Thể loại: ' + ${movie.getGenre()}"></p>
                             </div>
@@ -245,7 +262,7 @@
 
             <div class="col-lg-4">
                 <div class="listall" style="margin-top: 10px">
-                    <a href="#">
+                    <a>
                         <div class="pa-title-item-2">Phim vừa ra mắt</div>
                     </a>
                     <div class="content" th:each="top6Movie : ${top6MoviesNewest}" style="margin: 5px 0 5px 0;">
@@ -276,7 +293,7 @@
                     <p>Copyrights @Tổ 5. All Rights reserved</p>
                 </div>
                 <div class="col-auto">
-                    <p>Designed by <a href="#">Movie System</a></p>
+                    <p>Designed by <a th:href="@{'https://www.facebook.com/kienk4.me/'}" target="_blank">Movie System</a></p>
                 </div>
             </div>
         </div>
