@@ -27,6 +27,11 @@ public class User {
     private String gender;
     private String role;
 
+    public User(String email, String password){
+        this.email = email;
+        this.password = password;
+    }
+
     @Column(columnDefinition = "boolean default false")
     private boolean status;
 

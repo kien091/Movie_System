@@ -119,7 +119,7 @@ public class MovieService {
     }
 
     public Page<Movie> filterMoviesByCategory(String category, Pageable pageable) {
-        List<Movie> movies = new ArrayList<>();
+        List<Movie> movies;
         if(getAllGenres().contains(category)){
             movies = movieRepository.findMoviesByGenre(category);
         } else if (getAllReleaseDate().contains(category)) {

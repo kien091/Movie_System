@@ -3,6 +3,7 @@ package Source.Services;
 import Source.Models.User;
 import Source.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,9 @@ public class UserService {
     }
 
     public User save(User user){
+        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+        String bcryptPassword = bcrypt.encode(user.getPassword());
+        user.setPassword(bcryptPassword);
         return userRepository.save(user);
     }
 
@@ -51,5 +55,14 @@ public class UserService {
 
     public void delete(User user){
         userRepository.delete(user);
+    }
+
+    public boolean authenticateUser(User user){
+        User u = userRepository.findByEmail(user.getEmail());
+        if(u != null){
+            BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+            return bcrypt.matches(user.getPassword(), u.getPassword());
+        }
+        return false;
     }
 }

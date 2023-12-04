@@ -1,32 +1,46 @@
 package Source.Controllers;
 
 import Source.Models.Movie;
+import Source.Models.User;
+import Source.Services.EmailService;
 import Source.Services.MovieService;
+import Source.Services.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Properties;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("CallToPrintStackTrace")
 @Controller
 @RequestMapping("/")
 public class HomeController {
+    private final int PAGE_SIZE = 16;
     private final MovieService movieService;
+    private final UserService userService;
+
+    private final EmailService emailService;
     @Autowired
-    public HomeController(MovieService movieService) {
+    public HomeController(MovieService movieService, UserService userService, EmailService emailService) {
         this.movieService = movieService;
+        this.userService = userService;
+        this.emailService = emailService;
     }
 
     @RequestMapping("")
-    public String viewHome(Model model) {
+    public String viewHome(Model model, HttpSession session) {
         List<Movie> movies = movieService.findAll()
                 .stream()
                 .filter(movie -> movie.getTotalEpisode() > 1)
@@ -45,6 +59,8 @@ public class HomeController {
         model.addAttribute("releaseDates", movieService.getAllReleaseDate());
         model.addAttribute("nations", movieService.getAllNation());
         model.addAttribute("top6MoviesNewest", movieService.top6NewestMovies());
+        if(session.getAttribute("user") == null)
+            model.addAttribute("showLogin", true);
         return "home";
     }
 
@@ -95,7 +111,7 @@ public class HomeController {
                 .toList();
         model.addAttribute("movies", movies);
         model.addAttribute("navigation", "Kết quả tìm kiếm: \"" + search + "\"");
-        return filterBy("search", 0, 16, model);
+        return filterBy("search", 0, PAGE_SIZE, model);
     }
 
     @RequestMapping(value = "/filterBy", method = RequestMethod.GET)
@@ -141,6 +157,58 @@ public class HomeController {
         model.addAttribute("navigation",
                 "Kết quả tìm kiếm: \" Lọc \"");
 
-        return filterBy("search", 0, 16, model);
+        return filterBy("search", 0, PAGE_SIZE, model);
+    }
+
+    @PostMapping(value = "/login")
+    public String login(@RequestParam("email") String email,
+                        @RequestParam("password") String password,
+                        Model model, HttpSession session){
+        User user = new User(email, password);
+        if(userService.authenticateUser(user)){
+            session.setAttribute("user", user);
+        } else {
+            model.addAttribute("error", "Email hoặc mật khẩu không đúng");
+        }
+        return viewHome(model, session);
+    }
+
+    @PostMapping(value = "/reset")
+    public String reset(@RequestParam("email") String email,
+                        Model model, HttpSession session){
+        model.addAttribute("showReset", true);
+        List<User> users = userService.findAll();
+        User user = users.stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
+        if(user == null){
+            model.addAttribute("reset", "Tài khoản chưa được đăng kí");
+        } else {
+            StringBuilder passwordBuilder = new StringBuilder();
+            for(int i = 0; i < 8; i++){
+                passwordBuilder.append((char) (Math.random() * 26 + 'a'));
+            }
+
+            // use bcrypt to hash password and save to database
+            String newPassword = passwordBuilder.toString();
+            BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+            String bcryptPassword = bcrypt.encode(newPassword);
+            user.setPassword(bcryptPassword);
+            userService.update(user);
+
+            sendEmail(email, newPassword);
+
+            model.addAttribute("reset", "Mật khẩu đã được gửi về email của bạn");
+        }
+        return viewHome(model, session);
+    }
+
+    private void sendEmail(String email, String newPassword){
+        String from = "nguyntrungkin091@gmail.com";
+
+        String subject = "Bạn vừa yêu cầu đặt lại mật khẩu";
+        String body = "Mật khẩu mới của bạn là: " + newPassword;
+        emailService.sendEmail(from, email,subject, body);
     }
 }

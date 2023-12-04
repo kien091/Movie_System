@@ -5,7 +5,7 @@
   box-sizing: border-box;
   user-select: none;
 }
-.close{
+.close, .closes{
   position: absolute;
   top: 0;
   right: 0;
@@ -15,26 +15,12 @@
   background-color: #242628;
   box-sizing: border-box;
 }
-.close:hover{
+.close:hover, .closes:hover{
   background-color: #3498db;
   color: #242628;
   transition: 0.7s;
 }
-.closes{
-  position: absolute;
-  top: 0;
-  right: 0;
-  border: 1px solid #3498db;
-  padding: 4px 9px;
-  color: #3498db;
-  background-color: #242628;
-  box-sizing: border-box;
-}
-.closes:hover{
-  background-color: #3498db;
-  color: #242628;
-  transition: 0.7s;
-}
+
 .bg-img, .bg-img-si{
   height: 100vh;
   background-size: cover;
