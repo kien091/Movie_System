@@ -30,4 +30,10 @@ public class WatchHistory {
     @ManyToOne
     @JoinColumn(name = "movieId")
     private Movie movie;
+
+    public WatchHistory(LocalDateTime timeStamp, User user, Movie movie) {
+        this.timeStamp = timeStamp;
+        this.user = user;
+        this.movie = movie;
+    }
 }

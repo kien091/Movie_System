@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!--suppress ALL -->
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -170,47 +169,13 @@
     <div id="home" class="container">
         <div class="row">
             <div class="col-lg-8">
-                <div class="inf-all">
-                    <div class="inf-avt-link" style="margin-top: 20px">
-                        <div class="inf-avt-link-item-img">
-                            <a><img class="imgh" alt="Poster" th:src="${movie.getPoster()}"></a>
-                            <div class="inf-btn">
-                                <button class="btn btn-success btnpd">Yêu thích</button> <!-- change this -->
-                                <button class="btn btn-danger btnpd">Xem phim</button> <!-- change this -->
-                            </div>
-                        </div>
-                        <div class="inf-avt-link-item">
-                            <div class="inf-avt-link-item-name">
-                                <h4 th:text="${movie.getTitle()}" style="padding: 0;"></h4>
-                                <span class="nho" th:text="${movie.getTitle()}" style="font-size: 12px"></span>
-                            </div>
-                            <div class="inf-avt-link-item-status">
-                                <p>Trạng thái: <span th:text="${newestEpisode.getEpisodeName()}"
-                                                     style="background-color: #777777; color: white"></span></p>
-                                <p th:text="'Đạo diễn: ' + ${movie.getDirector()}"></p>
-                                <p th:text="'Thời lượng: ' + ${time}"></p>
-                                <p th:text="'Số tập: ' + ${movie.getTotalEpisode()}"></p>
-                                <p th:text="'Tình trạng: ' + (${movie.getTotalEpisode() == movie.getEpisodes().size()} ? 'Đã hoàn thành' : 'Phim đang chiếu')"></p>
-                                <p th:text="'Ngôn ngữ: Phụ đề Việt'"></p>
-                                <p th:text="'Năm sản xuất' + ${movie.getReleaseDate()}"></p>
-                                <p th:text="'Quốc gia: ' + ${movie.getNation()}"></p>
-                                <p th:text="'Thể loại: ' + ${movie.getGenre()}"></p>
-                            </div>
-                            <div class="inf-avt-link-item-tap" style="max-height: 200px; overflow-y: auto;">
-                                <p>Tập phim:</p>
-                                <div class="inf-avt-link-item-tap-list">
-                                    <a th:each="episode : ${movie.getEpisodes()}"
-                                       th:href="@{/watch(episode_id=${episode.getEpisodeId()})}"
-                                       th:text="${episode.getEpisodeName()}"
-                                       style="font-size: 10px"></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="inf-film">
-                        <hr>
-                        <p th:text="${movie.getDescription()}"></p>
-                        <iframe width="100%" height="400" th:src="${movie.getTrailer()}"></iframe>
+                <div class="video-film">
+                    <iframe width="100%" height="450"
+                            th:src="${episode.getEpisodeFilm()}"></iframe>
+                    <div class="count-tapfilm">
+                        <a th:each="episode : ${movie.getEpisodes()}"
+                           th:href="@{/watch(episode_id=${episode.getEpisodeId()})}"
+                           th:text="${episode.getEpisodeName()}"></a>
                     </div>
                 </div>
 
@@ -282,4 +247,5 @@
         </div>
     </footer>
 </div>
+
 </body>

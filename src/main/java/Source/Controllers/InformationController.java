@@ -2,8 +2,8 @@ package Source.Controllers;
 
 import Source.Models.Episode;
 import Source.Models.Movie;
-import Source.Services.EpisodeService;
 import Source.Services.MovieService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,17 +17,19 @@ import java.util.List;
 @RequestMapping("/information")
 public class InformationController {
     private final MovieService movieService;
-    private final EpisodeService episodeService;
 
     @Autowired
-    public InformationController(MovieService movieService, EpisodeService episodeService) {
+    public InformationController(MovieService movieService) {
         this.movieService = movieService;
-        this.episodeService = episodeService;
     }
 
     @RequestMapping("")
     public String viewInformation(@RequestParam("movie_id") int movieId,
-                                  Model model) {
+                                  Model model, HttpSession session) {
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
         Movie movie = movieService.findById(movieId);
         model.addAttribute("movie", movie);
 
