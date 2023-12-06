@@ -21,8 +21,6 @@ public class WatchHistory {
     @Column(columnDefinition = "DATETIME default CURRENT_TIMESTAMP")
     private Date timeWatch;
 
-    private LocalDateTime timeStamp;
-
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
@@ -31,8 +29,7 @@ public class WatchHistory {
     @JoinColumn(name = "movieId")
     private Movie movie;
 
-    public WatchHistory(LocalDateTime timeStamp, User user, Movie movie) {
-        this.timeStamp = timeStamp;
+    public WatchHistory(User user, Movie movie) {
         this.user = user;
         this.movie = movie;
     }

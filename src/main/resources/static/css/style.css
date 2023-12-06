@@ -247,19 +247,19 @@ h1,h2,h3,h4,h5,h6{
 }
 
 
-#pagination{
+.pagination{
     height: auto;
     margin: 10px 0;
     display: flex;
     justify-content: center;
 }
-#pagination a{
+.pagination a{
     padding: 5px 8px;
     margin: 0 5px;
     border: 1px solid whitesmoke;
 }
-#pagination a:hover,
-#pagination a.active{
+.pagination a:hover,
+.pagination a.active{
     border: 1px solid #ff6901;
     color: #ff6901;
 }

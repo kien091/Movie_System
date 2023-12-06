@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -40,10 +41,9 @@ public class WatchController {
             return "redirect:/";
         }
         // add to watch history
-        LocalDateTime time = LocalDateTime.now();
         User user = (User) session.getAttribute("user");
         Movie movie = episodeService.findById(episode_id).getMovie();
-        WatchHistory history = new WatchHistory(time, user, movie);
+        WatchHistory history = new WatchHistory(0, new Date(), user, movie);
         watchHistoryService.save(history);
 
         // Update view of episode

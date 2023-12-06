@@ -1,12 +1,15 @@
 package Source.Controllers;
 
+import Source.Models.Favorite;
 import Source.Models.User;
-import Source.Services.EmailService;
-import Source.Services.MovieService;
-import Source.Services.UserService;
+import Source.Models.WatchHistory;
+import Source.Services.*;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,14 +31,20 @@ public class ProfileController {
     private final UserService userService;
     private final MovieService movieService;
     private final EmailService emailService;
+    private final WatchHistoryService watchHistoryService;
+    private final FavoriteService favoriteService;
 
     @Autowired
     public ProfileController(UserService userService,
                              MovieService movieService,
-                             EmailService emailService) {
+                             EmailService emailService,
+                             WatchHistoryService watchHistoryService,
+                             FavoriteService favoriteService) {
         this.userService = userService;
         this.movieService = movieService;
         this.emailService = emailService;
+        this.watchHistoryService = watchHistoryService;
+        this.favoriteService = favoriteService;
     }
 
     @RequestMapping("")
@@ -47,6 +56,9 @@ public class ProfileController {
         model.addAttribute("genres", movieService.getAllGenres());
         model.addAttribute("nations", movieService.getAllNation());
         model.addAttribute("releaseDates", movieService.getAllReleaseDate());
+        if(model.getAttribute("action") == null){
+            model.addAttribute("action", "profile");
+        }
 
         User user = (User) session.getAttribute("user");
         if (user.getFirstName() == null && user.getLastName() == null) {
@@ -152,5 +164,47 @@ public class ProfileController {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @RequestMapping("/watch-history")
+    public String viewWatchHistory(@RequestParam(name = "page", defaultValue = "0") int page,
+                                   @RequestParam(name = "size", defaultValue = "20") int size,
+                                   Model model, HttpSession session){
+        Pageable pageable = PageRequest.of(page, size);
+        User user = (User) session.getAttribute("user");
+        Page<WatchHistory> historyPage = watchHistoryService.findByUserId(user.getUserId(), pageable);
+
+        model.addAttribute("histories", historyPage.getContent());
+        model.addAttribute("historyPage", historyPage);
+        model.addAttribute("action", "watch-history");
+        return viewProfile(model, session);
+    }
+
+    @RequestMapping("/watch-history/delete")
+    public String deleteWatchHistory(@RequestParam("id") int id, Model model, HttpSession session){
+        WatchHistory history = watchHistoryService.findById(id);
+        watchHistoryService.delete(history);
+        return viewWatchHistory(0, 20, model, session);
+    }
+
+    @RequestMapping("/favorite")
+    public String viewFavorite(@RequestParam(name = "page", defaultValue = "0") int page,
+                                   @RequestParam(name = "size", defaultValue = "20") int size,
+                                   Model model, HttpSession session){
+        Pageable pageable = PageRequest.of(page, size);
+        User user = (User) session.getAttribute("user");
+        Page<Favorite> favoritePage = favoriteService.findByUserId(user.getUserId(), pageable);
+
+        model.addAttribute("favorites", favoritePage.getContent());
+        model.addAttribute("favoritePage", favoritePage);
+        model.addAttribute("action", "favorite");
+        return viewProfile(model, session);
+    }
+
+    @RequestMapping("/favorite/delete")
+    public String deleteFavorite(@RequestParam("id") int id, Model model, HttpSession session){
+        Favorite favorite = favoriteService.findById(id);
+        favoriteService.delete(favorite);
+        return viewFavorite(0, 20, model, session);
     }
 }

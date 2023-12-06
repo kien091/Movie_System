@@ -3,9 +3,14 @@ package Source.Services;
 import Source.Models.WatchHistory;
 import Source.Repositories.WatchHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WatchHistoryService {
@@ -32,7 +37,6 @@ public class WatchHistoryService {
         WatchHistory wh = whRepository.findById(watchHistory.getWatchId())
                 .orElse(null);
         if(wh != null){
-            wh.setTimeStamp(watchHistory.getTimeStamp());
             wh.setTimeWatch(watchHistory.getTimeWatch());
 
             wh.setUser(watchHistory.getUser());
@@ -44,5 +48,17 @@ public class WatchHistoryService {
 
     public void delete(WatchHistory watchHistory){
         whRepository.delete(watchHistory);
+    }
+
+    public Page<WatchHistory> findByUserId(int userId, Pageable pageable){
+        List<WatchHistory> watchHistories = whRepository.findAll()
+                .stream()
+                .filter(watchHistory -> watchHistory.getUser().getUserId() == userId)
+                .sorted(Comparator.comparingInt(WatchHistory::getWatchId).reversed())
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), watchHistories.size());
+        return new PageImpl<>(watchHistories.subList(start, end), pageable, watchHistories.size());
     }
 }

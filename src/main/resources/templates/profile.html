@@ -186,12 +186,12 @@
         <div class="row">
             <div class="col-md-4" style="border: 1px solid white;">
                 <a th:href="@{/profile}">Thông tin cá nhân</a>
-                <a href="">Lịch sử xem phim</a>
-                <a href="">Danh sách yêu thích</a>
+                <a th:href="@{/profile/watch-history}">Lịch sử xem phim</a>
+                <a th:href="@{/profile/favorite}">Danh sách yêu thích</a>
                 <hr>
                 <a href="">Đăng xuất tài khoản</a>
             </div>
-            <div class="col-md-8">
+            <div id="profile" class="col-md-8" th:if="${action.equals('profile')}">
                 <div class="hs" style="margin-bottom: 10px;">
                     <div id="information-default" class="row" style="margin: 0;">
                         <div class="col-md-2"><img th:src="${session.user.avatar}" alt="Avatar" style="margin:20px 0; max-height: 100%; max-width:100%;"></div>
@@ -385,6 +385,107 @@
                     </div>
                 </div>
             </div>
+            <div id="watch-history" class="col-md-8" th:if="${action.equals('watch-history')}"
+                 style="border: 1px white solid;">
+                <table class="table" style="color: white;">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Phim đã xem</th>
+                        <th>Thời gian xem</th>
+                        <th>Xóa</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="history : ${histories}">
+                        <td th:text="${history.watchId}"></td>
+                        <td><a th:text="${history.movie.title}"></a></td>
+                        <td th:text="${history.timeWatch}"></td>
+                        <td>
+                            <a th:href="@{/profile/watch-history/delete(id=${history.watchId})}">
+                                <i class="fa-solid fa-trash-can" style="color: red;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="pagination" th:if="${historyPage.getContent().size() > 20}">
+                    <a th:if="${historyPage.hasPrevious()}"
+                       th:href="@{/profile/watch-history(page=*{0}, size=${historyPage.size})}">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                    <a th:each="i : ${#numbers.sequence(0, historyPage.totalPages - 1)}"
+                       th:class="${historyPage.number == i ? 'paitem active' : 'paitem'}"
+                       th:href="@{/profile/watch-history(page=*{i}, size=${historyPage.size})}"
+                       th:text="${i + 1}"></a>
+                    <a th:if="${historyPage.hasNext()}"
+                       th:href="@{/profile/watch-history(page=*{historyPage.totalPages - 1}, size=${historyPage.size})}"
+                       aria-label="Last">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </div>
+            </div>
+            <div id="favorite" class="col-md-8" th:if="${action.equals('favorite')}"
+                 style="border: 1px white solid;">
+                <table class="table" style="color: white;">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Phim yêu thích</th>
+                        <th>Xóa</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="favorite: ${favorites}">
+                        <td th:text="${favorite.favoriteId}"></td>
+                        <td><a th:text="${favorite.movie.title}"></a></td>
+                        <td>
+                            <a th:href="@{/profile/favorite/delete(id=${favorite.favoriteId})}" class="delete-link">
+                                <i class="fa-solid fa-trash-can" style="color: red;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="pagination" th:if="${favorites.size() > 20}">
+                    <a th:if="${favoritePage.hasPrevious()}"
+                       th:href="@{/profile/favorite(page=*{0}, size=${favoritePage.size})}">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                    <a th:each="i : ${#numbers.sequence(0, favoritePage.totalPages - 1)}"
+                       th:class="${favoritePage.number == i ? 'paitem active' : 'paitem'}"
+                       th:href="@{/profile/favorite(page=*{i}, size=${favoritePage.size})}"
+                       th:text="${i + 1}"></a>
+                    <a th:if="${favoritePage.hasNext()}"
+                       th:href="@{/profile/favorite(page=*{favoritePage.totalPages - 1}, size=${favoritePage.size})}"
+                       aria-label="Last">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </div>
+            </div>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                const profile = document.getElementById('profile');
+                const watch_history = document.getElementById('watch-history');
+
+                function showProfile() {
+                    profile.style.display = '';
+                    watch_history.style.display = 'none';
+                }
+
+                function showWatchHistory() {
+                    profile.style.display = 'none';
+                    watch_history.style.display = '';
+                }
+
+                const action = /*[[${action}]]*/ null;
+                if(action === 'profile') {
+                    showProfile();
+                }else if(action === 'watch-history') {
+                    showWatchHistory();
+                }
+                /*]]>*/
+            </script>
         </div>
     </div>
 
