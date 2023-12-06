@@ -53,4 +53,21 @@ public class Movie {
             joinColumns = @JoinColumn(name = "movieId"),
             inverseJoinColumns = @JoinColumn(name = "actorId"))
     private List<Actor> actors;
+
+    public Movie(String title, String description, String genre,
+                 int totalEpisode, String director, String poster,
+                 String trailer, String nation, String releaseDate,
+                 double rating, int totalView) {
+        this.title = title;
+        this.description = description;
+        this.genre = genre;
+        this.totalEpisode = totalEpisode;
+        this.director = director;
+        this.poster = poster;
+        this.trailer = trailer;
+        this.nation = nation;
+        this.releaseDate = releaseDate;
+        this.rating = rating;
+        this.totalView = totalView;
+    }
 }

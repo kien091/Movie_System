@@ -158,4 +158,10 @@ public class MovieService {
         int end = Math.min((start + pageable.getPageSize()), movies.size());
         return new PageImpl<>(movies.subList(start, end), pageable, movies.size());
     }
+
+    public Page<Movie> pageableMovies(List<Movie> movies, Pageable pageable){
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), movies.size());
+        return new PageImpl<>(movies.subList(start, end), pageable, movies.size());
+    }
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 @Controller
 @RequestMapping("/")
 public class HomeController {
@@ -72,22 +73,26 @@ public class HomeController {
                            @RequestParam(name = "size", defaultValue = "16") int size,
                            Model model){
         Pageable pageable = PageRequest.of(page, size);
-        Page<Movie> moviePage = movieService.filterMoviesByCategory(category, pageable);
-        String navigation = switch (category) {
-            case "series" -> "Phim bộ";
-            case "feature-film" -> "Phim lẻ";
-            case "complete" -> "Phim đã hoàn thành";
-            case "english-language-films" -> "Phim chiếu rạp";
-            case "favorite" -> "Phim yêu thích";
-            default -> category;
-        };
-        model.addAttribute("navigation", navigation);
+        Page<Movie> moviePage;
+        if(model.getAttribute("movies") == null){
+            moviePage = movieService.filterMoviesByCategory(category, pageable);
+            String navigation = switch (category) {
+                case "series" -> "Phim bộ";
+                case "feature-film" -> "Phim lẻ";
+                case "complete" -> "Phim đã hoàn thành";
+                case "english-language-films" -> "Phim chiếu rạp";
+                case "favorite" -> "Phim yêu thích";
+                default -> category;
+            };
+            model.addAttribute("navigation", navigation);
+        }else{
+            List<Movie> movies = (List<Movie>) model.getAttribute("movies");
+            assert movies != null;
+            moviePage = movieService.pageableMovies(movies, pageable);
+        }
 
         model.addAttribute("movies", moviePage.getContent());
         model.addAttribute("moviesPage", moviePage);
-
-        model.addAttribute("category", category);
-
 
         List<Movie> favorite = movieService.findTop16ByOrderByTotalViewDesc();
         model.addAttribute("carousel", favorite);
@@ -97,11 +102,18 @@ public class HomeController {
         model.addAttribute("releaseDates", movieService.getAllReleaseDate());
         model.addAttribute("nations", movieService.getAllNation());
         model.addAttribute("top6MoviesNewest", movieService.top6NewestMovies());
+        if(model.getAttribute("dividerPage") == null){
+            model.addAttribute("dividerPage", "filter");
+            model.addAttribute("categoryFilter", category);
+        }
         return "home";
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public String search(@RequestParam("search") String search, Model model) {
+    public String search(@RequestParam("search") String search,
+                         @RequestParam(name = "page", defaultValue = "0") int page,
+                         @RequestParam(name = "size", defaultValue = "16") int size,
+                         Model model) {
         List<Movie> movies = movieService.findAll()
                 .stream()
                 .filter(movie -> movie.getTitle().toLowerCase().contains(search.toLowerCase())
@@ -114,7 +126,9 @@ public class HomeController {
                 .toList();
         model.addAttribute("movies", movies);
         model.addAttribute("navigation", "Kết quả tìm kiếm: \"" + search + "\"");
-        return filterBy("search", 0, PAGE_SIZE, model);
+        model.addAttribute("dividerPage", "search");
+        model.addAttribute("searchSearch", search);
+        return filterBy("search", page, size, model);
     }
 
     @RequestMapping(value = "/filterBy", method = RequestMethod.GET)
@@ -122,6 +136,8 @@ public class HomeController {
                                    @RequestParam("genre") String genre,
                                    @RequestParam("year") String year,
                                    @RequestParam("sort") String sort,
+                                   @RequestParam(name = "page", defaultValue = "0") int page,
+                                   @RequestParam(name = "size", defaultValue = "16") int size,
                                    Model model){
         List<Movie> movies = movieService.findAll();
         if(status.equals("Hoàn thành")){
@@ -159,14 +175,20 @@ public class HomeController {
         model.addAttribute("movies", movies);
         model.addAttribute("navigation",
                 "Kết quả tìm kiếm: \" Lọc \"");
-
-        return filterBy("search", 0, PAGE_SIZE, model);
+        model.addAttribute("dividerPage", "filterBy");
+        model.addAttribute("statusFilterBy", status);
+        model.addAttribute("genreFilterBy", genre);
+        model.addAttribute("yearFilterBy", year);
+        model.addAttribute("sortFilterBy", sort);
+        return filterBy("filterBy", page, size, model);
     }
 
     @PostMapping(value = "/login")
     public String login(@RequestParam("email") String email,
                         @RequestParam("password") String password,
                         Model model, HttpSession session){
+        session.removeAttribute("user_storage");
+
         User user = new User(email, password);
         User foundUser = userService.findAll()
                 .stream()

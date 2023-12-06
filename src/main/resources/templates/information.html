@@ -115,6 +115,10 @@
                         <i class="fa-regular fa-user"></i>
                         <a th:href="@{/profile}">Profile</a>
                     </span>
+                    <span th:if="${#strings.equals(session.user.role, 'admin')}">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <a th:href="@{/admin}">Admin</a>
+                    </span>
                     <span>
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <a th:href="@{/logout}">Logout</a>

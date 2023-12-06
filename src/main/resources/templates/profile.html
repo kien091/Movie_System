@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress ALL -->
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -122,7 +123,11 @@
                 <div class="dropdown-content" id="dropdownContent" style="z-index: 999999">
                     <span>
                         <i class="fa-regular fa-user"></i>
-                        <a href="#">Profile</a>
+                        <a th:href="@{/profile}">Profile</a>
+                    </span>
+                    <span th:if="${#strings.equals(session.user.role, 'admin')}">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <a th:href="@{/admin}">Admin</a>
                     </span>
                     <span>
                         <i class="fa-solid fa-right-from-bracket"></i>
@@ -410,7 +415,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="pagination" th:if="${historyPage.getContent().size() > 20}">
+                <div class="pagination" th:if="${historyPage.totalPages > 1}">
                     <a th:if="${historyPage.hasPrevious()}"
                        th:href="@{/profile/watch-history(page=*{0}, size=${historyPage.size})}">
                         <span aria-hidden="true">&laquo;</span>
@@ -448,7 +453,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="pagination" th:if="${favorites.size() > 20}">
+                <div class="pagination" th:if="${favoritePage.totalPages > 20}">
                     <a th:if="${favoritePage.hasPrevious()}"
                        th:href="@{/profile/favorite(page=*{0}, size=${favoritePage.size})}">
                         <span aria-hidden="true">&laquo;</span>
@@ -464,7 +469,7 @@
                     </a>
                 </div>
             </div>
-            <div id="evaluate" class="col-md-8" th:if="${action.equals('review')}"
+            <div id="review" class="col-md-8" th:if="${action.equals('review')}"
                  style="border: 1px white solid;">
                 <table class="table" style="color: white;">
                     <thead>
@@ -488,17 +493,17 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="pagination" th:if="${reviews.size() > 20}">
+                <div class="pagination" th:if="${reviewPage.totalPages > 1}">
                     <a th:if="${reviewPage.hasPrevious()}"
-                       th:href="@{/profile/evaluate(page=*{0}, size=${reviewPage.size})}">
+                       th:href="@{/profile/review(page=*{0}, size=${reviewPage.size})}">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                     <a th:each="i : ${#numbers.sequence(0, reviewPage.totalPages - 1)}"
                        th:class="${reviewPage.number == i ? 'paitem active' : 'paitem'}"
-                       th:href="@{/profile/evaluate(page=*{i}, size=${reviewPage.size})}"
+                       th:href="@{/profile/review(page=*{i}, size=${reviewPage.size})}"
                        th:text="${i + 1}"></a>
                     <a th:if="${reviewPage.hasNext()}"
-                       th:href="@{/profile/evaluate(page=*{reviewPage.totalPages - 1}, size=${reviewPage.size})}"
+                       th:href="@{/profile/review(page=*{reviewPage.totalPages - 1}, size=${reviewPage.size})}"
                        aria-label="Last">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
@@ -509,34 +514,34 @@
                 const profile = document.getElementById('profile');
                 const watch_history = document.getElementById('watch-history');
                 const favorite = document.getElementById('favorite');
-                const evaluate = document.getElementById('evaluate');
+                const review = document.getElementById('review');
 
                 function showProfile() {
                     profile.style.display = '';
                     watch_history.style.display = 'none';
                     favorite.style.display = 'none';
-                    evaluate.style.display = 'none';
+                    review.style.display = 'none';
                 }
 
                 function showWatchHistory() {
                     profile.style.display = 'none';
                     watch_history.style.display = '';
                     favorite.style.display = 'none';
-                    evaluate.style.display = 'none';
+                    review.style.display = 'none';
                 }
 
                 function showFavorite() {
                     profile.style.display = 'none';
                     watch_history.style.display = 'none';
                     favorite.style.display = '';
-                    evaluate.style.display = 'none';
+                    review.style.display = 'none';
                 }
 
-                function showEvaluate() {
+                function showReview() {
                     profile.style.display = 'none';
                     watch_history.style.display = 'none';
                     favorite.style.display = 'none';
-                    evaluate.style.display = '';
+                    review.style.display = '';
                 }
 
                 const action = /*[[${action}]]*/ null;
@@ -546,8 +551,8 @@
                     showWatchHistory();
                 }else if(action === 'favorite') {
                     showFavorite();
-                }else if(action === 'evaluate') {
-                    showEvaluate();
+                }else if(action === 'review') {
+                    showReview();
                 }
                 /*]]>*/
             </script>
