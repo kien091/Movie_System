@@ -188,8 +188,9 @@
                 <a th:href="@{/profile}">Thông tin cá nhân</a>
                 <a th:href="@{/profile/watch-history}">Lịch sử xem phim</a>
                 <a th:href="@{/profile/favorite}">Danh sách yêu thích</a>
+                <a th:href="@{/profile/review}">Danh sách đánh giá</a>
                 <hr>
-                <a href="">Đăng xuất tài khoản</a>
+                <a th:href="@{/logout}">Đăng xuất tài khoản</a>
             </div>
             <div id="profile" class="col-md-8" th:if="${action.equals('profile')}">
                 <div class="hs" style="margin-bottom: 10px;">
@@ -463,19 +464,79 @@
                     </a>
                 </div>
             </div>
+            <div id="evaluate" class="col-md-8" th:if="${action.equals('review')}"
+                 style="border: 1px white solid;">
+                <table class="table" style="color: white;">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Phim yêu thích</th>
+                        <th>Điểm đánh giá</th>
+                        <th>Xóa</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="review: ${reviews}">
+                        <td th:text="${review.reviewId}"></td>
+                        <td><a th:text="${review.movie.title}"></a></td>
+                        <td th:text="${review.rating}"></td>
+                        <td>
+                            <a th:href="@{/profile/review/delete(id=${review.reviewId})}" class="delete-link">
+                                <i class="fa-solid fa-trash-can" style="color: red;"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="pagination" th:if="${reviews.size() > 20}">
+                    <a th:if="${reviewPage.hasPrevious()}"
+                       th:href="@{/profile/evaluate(page=*{0}, size=${reviewPage.size})}">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                    <a th:each="i : ${#numbers.sequence(0, reviewPage.totalPages - 1)}"
+                       th:class="${reviewPage.number == i ? 'paitem active' : 'paitem'}"
+                       th:href="@{/profile/evaluate(page=*{i}, size=${reviewPage.size})}"
+                       th:text="${i + 1}"></a>
+                    <a th:if="${reviewPage.hasNext()}"
+                       th:href="@{/profile/evaluate(page=*{reviewPage.totalPages - 1}, size=${reviewPage.size})}"
+                       aria-label="Last">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </div>
+            </div>
             <script th:inline="javascript">
                 /*<![CDATA[*/
                 const profile = document.getElementById('profile');
                 const watch_history = document.getElementById('watch-history');
+                const favorite = document.getElementById('favorite');
+                const evaluate = document.getElementById('evaluate');
 
                 function showProfile() {
                     profile.style.display = '';
                     watch_history.style.display = 'none';
+                    favorite.style.display = 'none';
+                    evaluate.style.display = 'none';
                 }
 
                 function showWatchHistory() {
                     profile.style.display = 'none';
                     watch_history.style.display = '';
+                    favorite.style.display = 'none';
+                    evaluate.style.display = 'none';
+                }
+
+                function showFavorite() {
+                    profile.style.display = 'none';
+                    watch_history.style.display = 'none';
+                    favorite.style.display = '';
+                    evaluate.style.display = 'none';
+                }
+
+                function showEvaluate() {
+                    profile.style.display = 'none';
+                    watch_history.style.display = 'none';
+                    favorite.style.display = 'none';
+                    evaluate.style.display = '';
                 }
 
                 const action = /*[[${action}]]*/ null;
@@ -483,6 +544,10 @@
                     showProfile();
                 }else if(action === 'watch-history') {
                     showWatchHistory();
+                }else if(action === 'favorite') {
+                    showFavorite();
+                }else if(action === 'evaluate') {
+                    showEvaluate();
                 }
                 /*]]>*/
             </script>

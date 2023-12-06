@@ -1,6 +1,7 @@
 package Source.Controllers;
 
 import Source.Models.Favorite;
+import Source.Models.Review;
 import Source.Models.User;
 import Source.Models.WatchHistory;
 import Source.Services.*;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Base64;
+import java.util.List;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @Controller
@@ -33,18 +35,21 @@ public class ProfileController {
     private final EmailService emailService;
     private final WatchHistoryService watchHistoryService;
     private final FavoriteService favoriteService;
+    private final ReviewService reviewService;
 
     @Autowired
     public ProfileController(UserService userService,
                              MovieService movieService,
                              EmailService emailService,
                              WatchHistoryService watchHistoryService,
-                             FavoriteService favoriteService) {
+                             FavoriteService favoriteService,
+                             ReviewService reviewService) {
         this.userService = userService;
         this.movieService = movieService;
         this.emailService = emailService;
         this.watchHistoryService = watchHistoryService;
         this.favoriteService = favoriteService;
+        this.reviewService = reviewService;
     }
 
     @RequestMapping("")
@@ -206,5 +211,39 @@ public class ProfileController {
         Favorite favorite = favoriteService.findById(id);
         favoriteService.delete(favorite);
         return viewFavorite(0, 20, model, session);
+    }
+
+    @RequestMapping("/review")
+    public String viewReview(@RequestParam(name = "page", defaultValue = "0") int page,
+                                 @RequestParam(name = "size", defaultValue = "20") int size,
+                                 Model model, HttpSession session){
+        Pageable pageable = PageRequest.of(page, size);
+        User user = (User) session.getAttribute("user");
+        Page<Review> reviewPage = reviewService.findByUserId(user.getUserId(), pageable);
+
+        model.addAttribute("reviews", reviewPage.getContent());
+        model.addAttribute("reviewPage", reviewPage);
+        model.addAttribute("action", "review");
+        return viewProfile(model, session);
+    }
+
+    @RequestMapping("/review/delete")
+    public String deleteReview(@RequestParam("id") int id, Model model, HttpSession session){
+        Review review = reviewService.findById(id);
+        reviewService.delete(review);
+
+        // update total rating
+        List<Review> reviews = reviewService.findAll()
+                .stream()
+                .filter(r -> r.getMovie().getMovieId() == review.getMovie().getMovieId())
+                .toList();
+        double rating = 0;
+        for (Review r : reviews) {
+            rating += r.getRating();
+        }
+        review.getMovie().setRating(rating/reviews.size());
+        movieService.update(review.getMovie());
+
+        return viewReview(0, 20, model, session);
     }
 }

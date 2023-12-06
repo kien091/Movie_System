@@ -1,10 +1,15 @@
 package Source.Services;
 
 import Source.Models.Review;
+import Source.Models.WatchHistory;
 import Source.Repositories.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -42,5 +47,17 @@ public class ReviewService {
 
     public void delete(Review review){
         reviewRepository.delete(review);
+    }
+
+    public Page<Review> findByUserId(int userId, Pageable pageable){
+        List<Review> reviews = reviewRepository.findAll()
+                .stream()
+                .filter(review -> review.getUser().getUserId() == userId)
+                .sorted(Comparator.comparingInt(Review::getReviewId).reversed())
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), reviews.size());
+        return new PageImpl<>(reviews.subList(start, end), pageable, reviews.size());
     }
 }

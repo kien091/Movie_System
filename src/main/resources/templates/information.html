@@ -78,6 +78,14 @@
             font-weight: 500;
             color: #a8a094;
         }
+        .evaluate {
+            direction: rtl;
+        }
+
+        .evaluate i:hover,
+        .evaluate a:hover ~a {
+            color: #d28c19;
+        }
     </style>
 </head>
 
@@ -198,10 +206,10 @@
                         </div>
                         <div class="inf-avt-link-item">
                             <div class="inf-avt-link-item-name">
-                                <h4 th:text="${movie.getTitle()}" style="padding: 0;"></h4>
+                                <h4 th:text="${movie.getTitle()} + ' (' + ${movie.rating} + ')'" style="padding: 0;"></h4>
                                 <span class="nho" th:text="${movie.getTitle()}" style="font-size: 12px"></span>
                             </div>
-                            <div class="inf-avt-link-item-status">
+                            <div class="inf-avt-link-item-status" style="display: grid;">
                                 <p>Trạng thái: <span th:text="${newestEpisode.getEpisodeName()}"
                                                      style="background-color: #777777; color: white"></span></p>
                                 <p th:text="'Đạo diễn: ' + ${movie.getDirector()}"></p>
@@ -212,6 +220,26 @@
                                 <p th:text="'Năm sản xuất: ' + ${movie.getReleaseDate()}"></p>
                                 <p th:text="'Quốc gia: ' + ${movie.getNation()}"></p>
                                 <p th:text="'Thể loại: ' + ${movie.getGenre()}"></p>
+                                <p>
+                                    <span style="float: left;">Đánh giá: </span>
+                                    <span class="evaluate" style="float: left; margin-left: 10px">
+                                        <a th:href="@{/information/evaluate(movie_id=${movie.movieId}, evaluate=5)}">
+                                            <i class="fa-solid fa-star" th:style="${review >= 5} ? 'color: #d28c19;' : ''"></i>
+                                        </a>
+                                        <a th:href="@{/information/evaluate(movie_id=${movie.movieId}, evaluate=4)}">
+                                            <i class="fa-solid fa-star" th:style="${review >= 4} ? 'color: #d28c19;' : ''"></i>
+                                        </a>
+                                        <a th:href="@{/information/evaluate(movie_id=${movie.movieId}, evaluate=3)}">
+                                            <i class="fa-solid fa-star" th:style="${review >= 3} ? 'color: #d28c19;' : ''"></i>
+                                        </a>
+                                        <a th:href="@{/information/evaluate(movie_id=${movie.movieId}, evaluate=2)}">
+                                            <i class="fa-solid fa-star" th:style="${review >= 2} ? 'color: #d28c19;' : ''"></i>
+                                        </a>
+                                        <a th:href="@{/information/evaluate(movie_id=${movie.movieId}, evaluate=1)}">
+                                            <i class="fa-solid fa-star" th:style="${review >= 1} ? 'color: #d28c19;' : ''"></i>
+                                        </a>
+                                    </span>
+                                </p>
                             </div>
                             <div class="inf-avt-link-item-tap" style="max-height: 200px; overflow-y: auto;">
                                 <p>Tập phim:</p>
