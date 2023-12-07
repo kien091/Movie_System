@@ -85,22 +85,28 @@ public class ProfileController {
                                 Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
 
-        byte[] bytes = Base64.getDecoder().decode(avatar);
-        String filePath = "src/main/resources/static/img/avatar/";
-        File file = new File(filePath);
-        if (!file.exists()) {
-            file.mkdirs();
+        String avatarPath;
+        if(avatar.contains("data:image")){
+            byte[] bytes = Base64.getDecoder().decode(avatar);
+            String filePath = "src/main/resources/static/img/avatar/";
+            File file = new File(filePath);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+
+            String fileName = System.currentTimeMillis() + "_avatar_" + user.getUserId() + ".png";
+            filePath += fileName;
+            try {
+                Files.write(Path.of(filePath), bytes, StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            avatarPath = "/img/avatar/" + fileName;
+        }else {
+            avatarPath = avatar;
         }
 
-        String fileName = System.currentTimeMillis() + "_avatar_" + user.getUserId() + ".png";
-        filePath += fileName;
-        try {
-            Files.write(Path.of(filePath), bytes, StandardOpenOption.CREATE);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        String avatarPath = "/img/avatar/" + fileName;
         user.setAvatar(avatarPath);
         user.setUsername(username);
         user.setFirstName(firstName);
