@@ -1,8 +1,12 @@
 package Source.Services;
 
 import Source.Models.Episode;
+import Source.Models.Movie;
 import Source.Repositories.EpisodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,5 +48,11 @@ public class EpisodeService {
 
     public void delete(Episode episode){
         episodeRepository.delete(episode);
+    }
+
+    public Page<Episode> pageableEpisodes(List<Episode> episodes, Pageable pageable){
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), episodes.size());
+        return new PageImpl<>(episodes.subList(start, end), pageable, episodes.size());
     }
 }

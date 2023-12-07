@@ -41,7 +41,7 @@
             <div class="slide-bar" style="width: initial; position: unset;">
                 <div class="slide-bar-start">
                     <a th:href="@{/admin}">Movies</a>
-                    <a href="ep">Episodes</a>
+                    <a th:href="@{/admin/episode}">Episodes</a>
                     <a href="actor">Actors</a>
                     <a href="user">Users</a>
                 </div>
@@ -50,11 +50,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-10">
+        <div id="movie-admin" class="col-md-10" th:if="${#strings.equals(page, 'movie')}">
             <div class="title" style="height: 10vh">
                 <h1>Movie</h1>
             </div>
-            <div id="movie">
+            <div id="movie-element">
                 <div class="content" style="margin-top: 7px">
                     <div class="search" style="display: inline-flex">
                         <form th:action="@{/admin/filter}" style="width: 90%;">
@@ -121,9 +121,9 @@
                                 <a type="button" class="btn btn-success" th:href="@{/admin/edit(id=${movie.movieId})}">
                                     <i class="fa-solid fa-pen-nib"></i>
                                 </a>
-                                <button class="btn btn-danger">
+                                <a type="button" class="btn btn-danger" th:href="@{/admin/delete(id=${movie.movieId})}">
                                     <i class="fa-solid fa-trash-can"></i>
-                                </button>
+                                </a>
                             </td>
                         </tr>
                     </table>
@@ -146,15 +146,15 @@
                     <div id="filter" class="pagination" th:if="${moviePage.totalPages > 1 && #strings.equals(dividerPage, 'filter')}"
                          style="display:flex; justify-content:center;">
                         <a th:if="${moviePage.hasPrevious()}"
-                           th:href="@{/admin(page=*{0}, size=${moviePage.size})}">
+                           th:href="@{/admin/filter(movie_name=${movieNameFilter}, genre=${genreFilter}, year=${yearFilter}, page=*{0}, size=${moviePage.size})}">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                         <a th:each="i : ${#numbers.sequence(0, moviePage.totalPages - 1)}"
                            th:class="${moviePage.number == i ? 'paitem active' : 'paitem'}"
-                           th:href="@{/admin(page=*{i}, size=${moviePage.size})}"
+                           th:href="@{/admin/filter(movie_name=${movieNameFilter}, genre=${genreFilter}, year=${yearFilter}, page=*{i}, size=${moviePage.size})}"
                            th:text="${i + 1}"></a>
                         <a th:if="${moviePage.hasNext()}"
-                           th:href="@{/admin(page=*{moviePage.totalPages - 1}, size=${moviePage.size})}"
+                           th:href="@{/admin/filter(movie_name=${movieNameFilter}, genre=${genreFilter}, year=${yearFilter}, page=*{moviePage.totalPages - 1}, size=${moviePage.size})}"
                            aria-label="Last">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
@@ -164,7 +164,7 @@
             <div id="movie-form" style="display: none;">
                 <div class="content">
                     <form th:action="@{/admin/handle}" method="get" style="font-size: 12px">
-                        <input type="hidden" name="id" th:value="${movieEdit != null ? movieEdit.movieId : ''}">
+                        <input type="hidden" name="id" th:value="${movieEdit != null ? movieEdit.movieId : '0'}">
                         <label for="title">Tên phim:</label>
                         <input class="form-control" type="text" id="title" name="title" required
                                th:value="${movieEdit != null ? movieEdit.title : ''}">
@@ -198,8 +198,8 @@
                         <label for="trailer">Trailer:</label>
                         <textarea class="form-control" type="text" id="trailer" name="trailer" required
                                   th:text="${movieEdit != null ? movieEdit.trailer : ''}"></textarea>
-                        <div style="display: flex; justify-content: space-between">
-                            <label for="nation">Nation:
+                        <div style="display: flex;">
+                            <label for="nation" style="margin-right: 30px;">Nation:
                                 <input class="form-control" type="text" id="nation" name="nation" required
                                        th:value="${movieEdit != null ? movieEdit.nation : ''}">
                             </label>
@@ -210,8 +210,8 @@
                             </label>
                         </div>
 
-                        <div style="display: flex; justify-content: center;">
-                            <button style="margin-top: 20px; width: 200px;" class="btn btn-dark" type="submit">Add</button>
+                        <div style="display: flex;">
+                            <button style="margin-top: 20px; width: 200px;" class="btn btn-dark" type="submit">Save</button>
                         </div>
                     </form>
                 </div>
@@ -219,7 +219,7 @@
 
             <script th:inline="javascript">
                 /*<![CDATA[*/
-                const movieElement = document.getElementById('movie');
+                const movieElement = document.getElementById('movie-element');
                 const movieForm = document.getElementById('movie-form');
 
                 function showAdd(){
@@ -230,6 +230,153 @@
                 const showMovieForm = /*[[${showMovieForm}]]*/ false;
                 if(showMovieForm){
                     showAdd();
+                }
+                /*]]>*/
+            </script>
+        </div>
+        <div id="episode-admin" class="col-md-10" th:if="${#strings.equals(page, 'episode')}">
+            <div class="title" style="height: 10vh">
+                <h1>Episode</h1>
+            </div>
+            <div id="episode-element">
+                <div class="content" style="margin-top: 7px">
+                    <div class="search" style="display: inline-flex">
+                        <form th:action="@{/admin/episode/filter}" style="width: 90%;">
+                            <div class="list-search">
+                                <label for="movie-episode">Phim</label>
+                                <select class="form-control" id="movie-episode" name="movie">
+                                    <option value="Tất cả">Tất cả</option>
+                                    <option th:each="movie : ${movies}" th:value="${movie.title}" th:text="${movie.title}"></option>
+                                </select>
+                            </div>
+                            <button type="submit" id="btn-episode-filter" class="btn btn-dark btn-filter-movie">
+                                <span>Áp dụng</span>
+                            </button>
+                        </form>
+                        <button class="btn btn-success" onclick="showAddEpisode()"
+                                style="display:flex; float:right; margin: 10px; align-items: center;">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="content" style="margin-top: 7px">
+                    <table border="1" style="width: 100%;">
+                        <colgroup>
+                            <col style="width: 5%">
+                            <col style="width: 50%">
+                            <col style="width: 15%">
+                            <col style="width: 10%">
+                            <col style="width: 10%">
+                            <col style="width: 10%">
+                        </colgroup>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên phim</th>
+                            <th>Tập phim</th>
+                            <th>Thời lượng (phút)</th>
+                            <th>Lượt xem</th>
+                            <th></th>
+                        </tr>
+                        <tr th:each="episode : ${episodes}">
+                            <td th:text="${episode.episodeId}"></td>
+                            <td th:text="${episode.movie.title}"></td>
+                            <td th:text="${episode.episodeName}"></td>
+                            <td th:text="${episode.duration}"></td>
+                            <td th:text="${episode.view}"></td>
+                            <td>
+                                <a type="button" class="btn btn-success" th:href="@{/admin/episode/edit(id=${episode.episodeId})}">
+                                    <i class="fa-solid fa-pen-nib"></i>
+                                </a>
+                                <button class="btn btn-danger">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="pagination" th:if="${episodePage.totalPages > 1 && #strings.equals(dividerPage, '')}"
+                         style="display:flex; justify-content:center;">
+                        <a th:if="${episodePage.hasPrevious()}"
+                           th:href="@{/admin/episode(page=*{0}, size=${episodePage.size})}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <a th:each="i : ${#numbers.sequence(0, episodePage.totalPages - 1)}"
+                           th:class="${episodePage.number == i ? 'paitem active' : 'paitem'}"
+                           th:href="@{/admin/episode(page=*{i}, size=${episodePage.size})}"
+                           th:text="${i + 1}"></a>
+                        <a th:if="${episodePage.hasNext()}"
+                           th:href="@{/admin/episode(page=*{episodePage.totalPages - 1}, size=${episodePage.size})}"
+                           aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </div>
+                    <div id="filter-episode" class="pagination" th:if="${episodePage.totalPages > 1 && #strings.equals(dividerPage, 'filter')}"
+                         style="display:flex; justify-content:center;">
+                        <a th:if="${episodePage.hasPrevious()}"
+                           th:href="@{/admin/episode/filter(movie=${movieFilter}, page=*{0}, size=${episodePage.size})}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <a th:each="i : ${#numbers.sequence(0, episodePage.totalPages - 1)}"
+                           th:class="${episodePage.number == i ? 'paitem active' : 'paitem'}"
+                           th:href="@{/admin/episode/filter(movie=${movieFilter}, page=*{i}, size=${episodePage.size})}"
+                           th:text="${i + 1}"></a>
+                        <a th:if="${episodePage.hasNext()}"
+                           th:href="@{/admin/episode/filter(movie=${movieFilter}, page=*{episodePage.totalPages - 1}, size=${episodePage.size})}"
+                           aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div id="episode-form" style="display: none;">
+                <div class="content">
+                    <form th:action="@{/admin/episode/handle}" method="get" style="font-size: 12px">
+                        <input type="hidden" name="id" th:value="${episodeEdit != null ? episodeEdit.episodeId : '0'}">
+                        <label for="episodeName">Tên tập phim:</label>
+                        <input class="form-control" type="text" id="episodeName" name="episodeName" required
+                               th:value="${episodeEdit != null ? episodeEdit.episodeName: ''}">
+
+                        <label for="episodeFilm">Đường dẫn:</label>
+                        <input class="form-control" type="text" id="episodeFilm" name="episodeFilm" required style="height: 100px;"
+                                  th:value="${episodeEdit != null ? episodeEdit.episodeFilm : ''}">
+                        <div style="display: flex;">
+                            <label for="duration" style="margin-right: 30px;">Thời lượng:
+                                <input class="form-control" type="number" id="duration" name="duration" required
+                                       th:value="${episodeEdit != null ? episodeEdit.duration : ''}">
+                            </label>
+
+
+                            <div class="list-search">
+                                <label for="movie-episode-dropdown">Phim</label>
+                                <select class="form-control" id="movie-episode-dropdown" name="movie">
+                                    <option value="Tất cả">Tất cả</option>
+                                    <option th:each="movie : ${movies}"
+                                            th:value="${movie.title}"
+                                            th:text="${movie.title}"
+                                            th:selected="${episodeEdit != null && episodeEdit.movie.title == movie.title}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: flex;">
+                            <button style="margin-top: 20px; width: 200px;" class="btn btn-dark" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                const episodeElement = document.getElementById('episode-element');
+                const episodeForm = document.getElementById('episode-form');
+
+                function showAddEpisode(){
+                    episodeElement.style.display = 'none';
+                    episodeForm.style.display = '';
+                }
+
+                const showEpisodeForm = /*[[${showEpisodeForm}]]*/ false;
+                if(showEpisodeForm){
+                    showAddEpisode();
                 }
                 /*]]>*/
             </script>
