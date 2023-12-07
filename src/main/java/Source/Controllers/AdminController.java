@@ -559,14 +559,22 @@ public class AdminController {
                              Model model, HttpSession session){
         List<User> users = userService.findAll()
                 .stream()
-                .filter(user -> user.getUsername().toLowerCase().contains(search.toLowerCase())
-                        || user.getEmail().toLowerCase().contains(search.toLowerCase())
-                        || user.getFirstName().toLowerCase().contains(search.toLowerCase())
-                        || user.getLastName().toLowerCase().contains(search.toLowerCase())
-                        || user.getDateOfBirth().toLowerCase().contains(search.toLowerCase())
-                        || user.getGender().toLowerCase().contains(search.toLowerCase()))
-                .toList();
+                .filter(user -> {
+                    String username = user.getUsername();
+                    String email = user.getEmail();
+                    String firstName = user.getFirstName();
+                    String lastName = user.getLastName();
+                    String dateOfBirth = user.getDateOfBirth();
+                    String gender = user.getGender();
 
+                    return (username != null && username.toLowerCase().contains(search.toLowerCase()))
+                            || (email != null && email.toLowerCase().contains(search.toLowerCase()))
+                            || (firstName != null && firstName.toLowerCase().contains(search.toLowerCase()))
+                            || (lastName != null && lastName.toLowerCase().contains(search.toLowerCase()))
+                            || (dateOfBirth != null && dateOfBirth.toLowerCase().contains(search.toLowerCase()))
+                            || (gender != null && gender.toLowerCase().contains(search.toLowerCase()));
+                })
+                .toList();
 
         model.addAttribute("users", users);
         model.addAttribute("dividerPage", "search");

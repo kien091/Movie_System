@@ -87,17 +87,25 @@ public class ProfileController {
 
         String avatarPath;
         if(avatar.contains("data:image")){
-            byte[] bytes = Base64.getDecoder().decode(avatar);
+            byte[] bytes = Base64.getDecoder().decode(avatar.split(",")[1].trim());
             String filePath = "src/main/resources/static/img/avatar/";
             File file = new File(filePath);
             if (!file.exists()) {
                 file.mkdirs();
             }
 
+            String targetPath = "target/classes/static/img/avatar/";
+            File targetFile = new File(targetPath);
+            if (!targetFile.exists()) {
+                targetFile.mkdirs();
+            }
+
             String fileName = System.currentTimeMillis() + "_avatar_" + user.getUserId() + ".png";
             filePath += fileName;
+            targetPath += fileName;
             try {
                 Files.write(Path.of(filePath), bytes, StandardOpenOption.CREATE);
+                Files.write(Path.of(targetPath), bytes, StandardOpenOption.CREATE);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

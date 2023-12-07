@@ -48,10 +48,6 @@ public class UserService {
             u.setGender(user.getGender());
             u.setStatus(user.isStatus());
 
-            u.setWatchHistories(user.getWatchHistories());
-            u.setReviews(user.getReviews());
-            u.setFavorites(user.getFavorites());
-
             userRepository.save(u);
         }
     }
