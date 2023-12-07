@@ -326,11 +326,11 @@
                     </a>
                     <a th:each="i : ${#numbers.sequence(0, moviesPage.totalPages - 1)}"
                        th:class="${moviesPage.number == i ? 'paitem active' : 'paitem'}"
-                       th:href="@{/filterBy(status=${statusFilterBy}, gender=${genreFilterBy},
+                       th:href="@{/filterBy(status=${statusFilterBy}, genre=${genreFilterBy},
                                 year=${yearFilterBy}, sort=${sortFilterBy}, page=*{i}, size=${moviesPage.size})}"
                        th:text="${i + 1}"></a>
                     <a th:if="${moviesPage.hasNext()}"
-                       th:href="@{/filterBy(status=${statusFilterBy}, gender=${genreFilterBy},
+                       th:href="@{/filterBy(status=${statusFilterBy}, genre=${genreFilterBy},
                                 year=${yearFilterBy}, sort=${sortFilterBy}, page=*{moviesPage.totalPages - 1}, size=${moviesPage.size})}"
                        aria-label="Last">
                         <span aria-hidden="true">&raquo;</span>
