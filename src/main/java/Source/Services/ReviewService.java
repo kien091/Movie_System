@@ -1,7 +1,6 @@
 package Source.Services;
 
 import Source.Models.Review;
-import Source.Models.WatchHistory;
 import Source.Repositories.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

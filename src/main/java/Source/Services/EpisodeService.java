@@ -1,7 +1,6 @@
 package Source.Services;
 
 import Source.Models.Episode;
-import Source.Models.Movie;
 import Source.Repositories.EpisodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

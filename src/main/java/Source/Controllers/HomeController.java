@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/")
 public class HomeController {
-    private final int PAGE_SIZE = 16;
     private final MovieService movieService;
     private final UserService userService;
 
