@@ -200,6 +200,11 @@ public class HomeController {
         } else {
             model.addAttribute("error", "Email hoặc mật khẩu không đúng");
         }
+        assert foundUser != null;
+        if (foundUser.isStatus()){
+            session.removeAttribute("user");
+            model.addAttribute("error", "Tài khoản của bạn đã bị khóa");
+        }
         return viewHome(model, session);
     }
 

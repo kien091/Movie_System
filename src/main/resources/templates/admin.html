@@ -43,7 +43,7 @@
                     <a th:href="@{/admin}">Movies</a>
                     <a th:href="@{/admin/episode}">Episodes</a>
                     <a th:href="@{/admin/actor}">Actors</a>
-                    <a href="user">Users</a>
+                    <a th:href="@{/admin/user}">Users</a>
                 </div>
                 <div class="slide-bar-end">
                     <a th:href="@{/}">Trang chủ</a>
@@ -631,6 +631,104 @@
 
                 /*]]>*/
             </script>
+        </div>
+        <div id="user" class="col-md-10" th:if="${#strings.equals(page, 'user')}">
+            <div class="title" style="height: 10vh">
+                <h1>User</h1>
+            </div>
+            <div id="user-element">
+                <div class="content" style="margin-top: 7px">
+                    <div class="search" style="display: inline-flex">
+                        <form th:action="@{/admin/user}" style="width: 90%;">
+                            <div class="list-search">
+                                <label for="search">Tìm kiếm</label>
+                                <input class="form-control" id="search" name="search" placeholder="Tìm kiếm">
+                            </div>
+                            <button type="submit" id="btn-user-filter" class="btn btn-dark btn-filter-movie">
+                                <span>Tìm kiếm</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="content" style="margin-top: 7px">
+                    <table border="1" style="width: 100%;">
+                        <colgroup>
+                            <col style="width: 5%">
+                            <col style="width: 15%">
+                            <col style="width: 35%">
+                            <col style="width: 15%">
+                            <col style="width: 10%">
+                            <col style="width: 10%">
+                            <col style="width: 10%">
+                        </colgroup>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên tài khoản</th>
+                            <th>Email</th>
+                            <th>Ngày sinh</th>
+                            <th>Giới tính</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                        <tr th:each="user : ${users}">
+                            <td th:text="${user.userId}"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${#strings.isEmpty(user.dateOfBirth) ? 'Chưa đặt' : user.dateOfBirth}"></td>
+                            <td th:text="${#strings.isEmpty(user.gender) ? 'Chưa đặt' : user.gender}"></td>
+                            <td th:style="${user.status ? 'color:red;' : 'color: green;'}" th:text="${user.status ? 'Lock' : 'Normal'}"></td>
+                            <td>
+                                <a type="button" class="btn btn-danger"
+                                   th:if="${!user.status}"
+                                   th:href="@{/admin/user/status(id=${user.userId})}">
+                                    <i class="fa-solid fa-lock"></i>
+                                </a>
+                                <a type="button" class="btn btn-success"
+                                   th:if="${user.status}"
+                                   th:href="@{/admin/user/status(id=${user.userId})}">
+                                    <i class="fa-solid fa-lock-open"></i>
+                                </a>
+                                <a type="button" class="btn btn-info"
+                                   th:href="@{/admin/user/role(id=${user.userId})}">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="pagination" th:if="${userPage.totalPages > 1 && #strings.equals(dividerPage, '')}"
+                         style="display:flex; justify-content:center;">
+                        <a th:if="${userPage.hasPrevious()}"
+                           th:href="@{/admin/user(page=*{0}, size=${userPage.size})}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <a th:each="i : ${#numbers.sequence(0, userPage.totalPages - 1)}"
+                           th:class="${userPage.number == i ? 'paitem active' : 'paitem'}"
+                           th:href="@{/admin/user(page=*{i}, size=${userPage.size})}"
+                           th:text="${i + 1}"></a>
+                        <a th:if="${userPage.hasNext()}"
+                           th:href="@{/admin/user(page=*{userPage.totalPages - 1}, size=${userPage.size})}"
+                           aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </div>
+                    <div id="filter-user" class="pagination" th:if="${userPage.totalPages > 1 && #strings.equals(dividerPage, 'search')}"
+                         style="display:flex; justify-content:center;">
+                        <a th:if="${userPage.hasPrevious()}"
+                           th:href="@{/admin/user/search(search=${searchFilter}, page=*{0}, size=${userPage.size})}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <a th:each="i : ${#numbers.sequence(0, userPage.totalPages - 1)}"
+                           th:class="${userPage.number == i ? 'paitem active' : 'paitem'}"
+                           th:href="@{/admin/user/search(search=${searchFilter}, page=*{i}, size=${userPage.size})}"
+                           th:text="${i + 1}"></a>
+                        <a th:if="${userPage.hasNext()}"
+                           th:href="@{/admin/user/search(search=${searchFilter}, page=*{userPage.totalPages - 1}, size=${userPage.size})}"
+                           aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -3,6 +3,9 @@ package Source.Services;
 import Source.Models.User;
 import Source.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +67,11 @@ public class UserService {
             return bcrypt.matches(user.getPassword(), u.getPassword());
         }
         return false;
+    }
+
+    public Page<User> pageableUsers(List<User> users, Pageable pageable){
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), users.size());
+        return new PageImpl<>(users.subList(start, end), pageable, users.size());
     }
 }

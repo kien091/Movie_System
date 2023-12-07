@@ -3,9 +3,11 @@ package Source.Controllers;
 import Source.Models.Actor;
 import Source.Models.Episode;
 import Source.Models.Movie;
+import Source.Models.User;
 import Source.Services.ActorService;
 import Source.Services.EpisodeService;
 import Source.Services.MovieService;
+import Source.Services.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,13 +30,16 @@ public class AdminController {
     private final MovieService movieService;
     private final EpisodeService episodeService;
     private final ActorService actorService;
+    private final UserService userService;
     @Autowired
     public AdminController(MovieService movieService,
                            EpisodeService episodeService,
-                           ActorService actorService) {
+                           ActorService actorService,
+                           UserService userService) {
         this.movieService = movieService;
         this.episodeService = episodeService;
         this.actorService = actorService;
+        this.userService = userService;
     }
 
     @RequestMapping("")
@@ -483,5 +488,90 @@ public class AdminController {
 
         actorService.deleteActionMovie(actorId, movieId);
         return addMovieToActor(actorId, 0, 7, model, session);
+    }
+
+    @RequestMapping("/user")
+    public String viewUser(@RequestParam(name = "page", defaultValue = "0") int page,
+                           @RequestParam(name = "size", defaultValue = "7") int size,
+                           Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        List<User> users;
+        if(model.getAttribute("users") == null){
+            users = userService.findAll()
+                    .stream()
+                    .filter(user -> !user.getRole().equals("admin"))
+                    .sorted(Comparator.comparing(User::getUserId).reversed())
+                    .toList();
+            model.addAttribute("dividerPage", "");
+        }else {
+            users = (List<User>) model.getAttribute("users");
+            assert users != null;
+            users = users.stream()
+                    .filter(user -> !user.getRole().equals("admin"))
+                    .toList();
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userService.pageableUsers(users, pageable);
+
+        model.addAttribute("users", userPage.getContent());
+        model.addAttribute("userPage", userPage);
+        model.addAttribute("page", "user");
+        return "admin";
+    }
+
+    @RequestMapping("/user/status")
+    public String changeUserStatus(@RequestParam("id") int userId,
+                                   Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        User user = userService.findById(userId);
+        if(user != null){
+            user.setStatus(!user.isStatus());
+            userService.update(user);
+        }
+        return viewUser(0, 7, model, session);
+    }
+
+    @RequestMapping("/user/role")
+    public String changeUserRole(@RequestParam("id") int userId,
+                                 Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        User user = userService.findById(userId);
+        if(user != null){
+            user.setRole(user.getRole().equals("user") ? "admin" : "user");
+            userService.update(user);
+        }
+        return viewUser(0, 7, model, session);
+    }
+
+    @RequestMapping("/user/search")
+    public String searchUser(@RequestParam("search") String search,
+                             @RequestParam(name = "page", defaultValue = "0") int page,
+                             @RequestParam(name = "size", defaultValue = "7") int size,
+                             Model model, HttpSession session){
+        List<User> users = userService.findAll()
+                .stream()
+                .filter(user -> user.getUsername().toLowerCase().contains(search.toLowerCase())
+                        || user.getEmail().toLowerCase().contains(search.toLowerCase())
+                        || user.getFirstName().toLowerCase().contains(search.toLowerCase())
+                        || user.getLastName().toLowerCase().contains(search.toLowerCase())
+                        || user.getDateOfBirth().toLowerCase().contains(search.toLowerCase())
+                        || user.getGender().toLowerCase().contains(search.toLowerCase()))
+                .toList();
+
+
+        model.addAttribute("users", users);
+        model.addAttribute("dividerPage", "search");
+        model.addAttribute("searchFilter", search);
+        return viewUser(page, size, model, session);
     }
 }
