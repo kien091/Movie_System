@@ -42,7 +42,7 @@
                 <div class="slide-bar-start">
                     <a th:href="@{/admin}">Movies</a>
                     <a th:href="@{/admin/episode}">Episodes</a>
-                    <a href="actor">Actors</a>
+                    <a th:href="@{/admin/actor}">Actors</a>
                     <a href="user">Users</a>
                 </div>
                 <div class="slide-bar-end">
@@ -287,7 +287,7 @@
                                 <a type="button" class="btn btn-success" th:href="@{/admin/episode/edit(id=${episode.episodeId})}">
                                     <i class="fa-solid fa-pen-nib"></i>
                                 </a>
-                                <button class="btn btn-danger">
+                                <button class="btn btn-danger" th:href="@{/admin/episode/delete(id=${episode.episodeId})}">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </td>
@@ -378,6 +378,257 @@
                 if(showEpisodeForm){
                     showAddEpisode();
                 }
+                /*]]>*/
+            </script>
+        </div>
+        <div id="actor-admin" class="col-md-10" th:if="${#strings.equals(page, 'actor')}">
+            <div class="title" style="height: 10vh">
+                <h1>Actor</h1>
+            </div>
+            <div id="actor-element">
+                <div class="content" style="margin-top: 7px">
+                    <div class="search" style="display: inline-flex">
+                        <form th:action="@{/admin/actor/filter}" style="width: 90%;">
+                            <div class="list-search">
+                                <label for="actor_name">Tên diễn viên</label>
+                                <input class="form-control" id="actor_name" name="actor_name" placeholder="Tên diễn viên">
+                            </div>
+                            <div class="list-search">
+                                <label for="movie-actor">Phim</label>
+                                <select class="form-control" id="movie-actor" name="movie">
+                                    <option value="Tất cả">Tất cả</option>
+                                    <option th:each="movie : ${movies}" th:value="${movie.title}" th:text="${movie.title}"></option>
+                                </select>
+                            </div>
+                            <button type="submit" id="btn-actor-filter" class="btn btn-dark btn-filter-movie">
+                                <span>Áp dụng</span>
+                            </button>
+                        </form>
+                        <button class="btn btn-success" onclick="showAddActor()"
+                                style="display:flex; float:right; margin: 10px; align-items: center;">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="content" style="margin-top: 7px">
+                    <table border="1" style="width: 100%;">
+                        <colgroup>
+                            <col style="width: 5%">
+                            <col style="width: 20%">
+                            <col style="width: 60%">
+                            <col style="width: 15%">
+                        </colgroup>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên diễn viên</th>
+                            <th>Tiểu sử</th>
+                            <th></th>
+                        </tr>
+                        <tr th:each="actor : ${actors}">
+                            <td th:text="${actor.actorId}"></td>
+                            <td th:text="${actor.name}"></td>
+                            <td th:text="${actor.biography.substring(0, 70) + ' ...'}"></td>
+                            <td>
+                                <a type="button" class="btn btn-success" th:href="@{/admin/actor/edit(id=${actor.actorId})}">
+                                    <i class="fa-solid fa-pen-nib"></i>
+                                </a>
+                                <a type="button" class="btn btn-danger" th:href="@{/admin/actor/delete(id=${actor.actorId})}">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                                <a type="button" class="btn btn-primary" th:href="@{/admin/actor/movie(id=${actor.actorId})}">
+                                    <i class="fa-solid fa-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="pagination" th:if="${actorPage.totalPages > 1 && #strings.equals(dividerPage, '')}"
+                         style="display:flex; justify-content:center;">
+                        <a th:if="${actorPage.hasPrevious()}"
+                           th:href="@{/admin/actor(page=*{0}, size=${actorPage.size})}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <a th:each="i : ${#numbers.sequence(0, actorPage.totalPages - 1)}"
+                           th:class="${actorPage.number == i ? 'paitem active' : 'paitem'}"
+                           th:href="@{/admin/actor(page=*{i}, size=${actorPage.size})}"
+                           th:text="${i + 1}"></a>
+                        <a th:if="${actorPage.hasNext()}"
+                           th:href="@{/admin/actor(page=*{actorPage.totalPages - 1}, size=${actorPage.size})}"
+                           aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </div>
+                    <div id="filter-actor" class="pagination" th:if="${actorPage.totalPages > 1 && #strings.equals(dividerPage, 'filter')}"
+                         style="display:flex; justify-content:center;">
+                        <a th:if="${actorPage.hasPrevious()}"
+                           th:href="@{/admin/actor/filter(movie=${movieFilter}, page=*{0}, size=${actorPage.size})}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <a th:each="i : ${#numbers.sequence(0, actorPage.totalPages - 1)}"
+                           th:class="${actorPage.number == i ? 'paitem active' : 'paitem'}"
+                           th:href="@{/admin/actor/filter(movie=${movieFilter}, page=*{i}, size=${actorPage.size})}"
+                           th:text="${i + 1}"></a>
+                        <a th:if="${actorPage.hasNext()}"
+                           th:href="@{/admin/actor/filter(movie=${movieFilter}, page=*{actorPage.totalPages - 1}, size=${actorPage.size})}"
+                           aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div id="actor-form" style="display: none;">
+                <div class="content">
+                    <form th:action="@{/admin/actor/handle}" method="get" style="font-size: 12px">
+                        <input type="hidden" name="id" th:value="${actorEdit != null ? actorEdit.actorId : '0'}">
+                        <label for="actorName">Tên diễn viên:</label>
+                        <input class="form-control" type="text" id="actorName" name="actorName" required
+                               th:value="${actorEdit != null ? actorEdit.name: ''}">
+
+                        <label for="biography">Tiểu sử:</label>
+                        <textarea class="form-control" type="text" id="biography" name="biography" required style="height: 300px;"
+                                  th:text="${actorEdit != null ? actorEdit.biography : ''}"></textarea>
+
+                        <div style="display: flex;">
+                            <button style="margin-top: 20px; width: 200px;" class="btn btn-dark" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                const actorElement = document.getElementById('actor-element');
+                const actorForm = document.getElementById('actor-form');
+
+                function showAddActor(){
+                    actorElement.style.display = 'none';
+                    actorForm.style.display = '';
+                }
+
+                const showActorForm = /*[[${showActorForm}]]*/ false;
+                if (showActorForm){
+                    showAddActor();
+                }
+
+                /*]]>*/
+            </script>
+        </div>
+        <div id="actor-movie-admin" class="col-md-10" th:if="${#strings.equals(page, 'actor-movie')}">
+            <div class="title" style="height: 10vh">
+                <h1>Actor</h1>
+            </div>
+            <div id="actor-movie-element">
+                <div class="content" style="margin-top: 7px">
+                    <div class="search" style="display: inline-flex">
+                        <form th:action="@{/admin/actor/movie/filter}" style="width: 90%;">
+                            <input class="form-control" type="hidden" name="id" th:value="${actor.actorId}">
+
+                            <label for="actor-movie" style="margin-left: 20px">
+                                <input class="form-control" id="actor-movie" type="text" name="movie" placeholder="Tên phim">
+                            </label>
+                            <button type="submit" id="btn-actor-movie-filter" class="btn btn-dark btn-filter-movie"
+                                    style="margin: 0 10px 0 10px;">
+                                <span>Áp dụng</span>
+                            </button>
+                        </form>
+                        <button class="btn btn-success" onclick="showAddActorMovie()"
+                                style="display:flex; float:right; margin: 10px; align-items: center;">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="content" style="margin-top: 7px">
+                    <table border="1" style="width: 100%;">
+                        <colgroup>
+                            <col style="width: 5%">
+                            <col style="width: 25%">
+                            <col style="width: 60%">
+                            <col style="width: 10%">
+                        </colgroup>
+                        <tr>
+                            <th>STT</th>>
+                            <th>Tên diễn viên</th>
+                            <th>Tên phim</th>
+                            <th></th>
+                        </tr>
+                        <tr th:each="movie, stat : ${movies}">
+                            <td th:text="${stat.index + 1}"></td>
+                            <td th:text="${actor.name}"></td>
+                            <td th:text="${movie.title}"></td>
+                            <td>
+                                <a type="button" class="btn btn-danger" th:href="@{/admin/actor/movie/delete(actor_id=${actor.actorId}, movie_id=${movie.movieId})}">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="pagination" th:if="${moviePage.totalPages > 1 && #strings.equals(dividerPage, '')}"
+                         style="display:flex; justify-content:center;">
+                        <a th:if="${moviePage.hasPrevious()}"
+                           th:href="@{/admin/actor/movie(id=${actor.actorId}, page=*{0}, size=${moviePage.size})}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <a th:each="i : ${#numbers.sequence(0, moviePage.totalPages - 1)}"
+                           th:class="${moviePage.number == i ? 'paitem active' : 'paitem'}"
+                           th:href="@{/admin/actor/movie(id=${actor.actorId}, page=*{i}, size=${moviePage.size})}"
+                           th:text="${i + 1}"></a>
+                        <a th:if="${moviePage.hasNext()}"
+                           th:href="@{/admin/actor/movie(id=${actor.actorId}, page=*{moviePage.totalPages - 1}, size=${moviePage.size})}"
+                           aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </div>
+                    <div id="filter-actor-movie" class="pagination" th:if="${moviePage.totalPages > 1 && #strings.equals(dividerPage, 'filter')}"
+                         style="display:flex; justify-content:center;">
+                        <a th:if="${moviePage.hasPrevious()}"
+                           th:href="@{/admin/actor/movie/filter(id=${actorIdFilter}, movie=${movieFilter}, page=*{0}, size=${moviePage.size})}">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                        <a th:each="i : ${#numbers.sequence(0, moviePage.totalPages - 1)}"
+                           th:class="${moviePage.number == i ? 'paitem active' : 'paitem'}"
+                           th:href="@{/admin/actor/movie/filter(id=${actorIdFilter}, movie=${movieFilter}, page=*{i}, size=${moviePage.size})}"
+                           th:text="${i + 1}"></a>
+                        <a th:if="${actorPage.hasNext()}"
+                           th:href="@{/admin/actor/movie/filter(id=${actorIdFilter}, movie=${movieFilter}, page=*{moviePage.totalPages - 1}, size=${moviePage.size})}"
+                           aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div id="actor-movie-form" style="display: none;">
+                <div class="content">
+                    <form th:action="@{/admin/actor/movie/handle}" method="get" style="font-size: 12px">
+                        <input type="hidden" name="id" th:value="${actor!= null ? actor.actorId : '0'}">
+                        <label for="actorMovieName">Tên diễn viên:</label>
+                        <input class="form-control" type="text" id="actorMovieName" name="actorName" required readonly
+                               th:value="${actor != null ? actor.name: ''}">
+
+                        <div class="list-search" style="margin: 0;">
+                            <label for="actor-movie-film">Phim</label>
+                            <select class="form-control" id="actor-movie-film" name="movie">
+                                <option th:each="movie : ${moviesNotInActor}" th:value="${movie.title}" th:text="${movie.title}"></option>
+                            </select>
+                        </div>
+                        <div style="display: flex;">
+                            <button style="margin-top: 20px; width: 200px;" class="btn btn-dark" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                const actorMovieElement = document.getElementById('actor-movie-element');
+                const actorMovieForm = document.getElementById('actor-movie-form');
+
+                function showAddActorMovie(){
+                    actorMovieElement.style.display = 'none';
+                    actorMovieForm.style.display = '';
+                }
+
+                const showActorMovieForm = /*[[${showActorMovieForm}]]*/ false;
+                if (showActorMovieForm){
+                    showAddActorMovie();
+                }
+
                 /*]]>*/
             </script>
         </div>

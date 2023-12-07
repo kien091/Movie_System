@@ -1,7 +1,9 @@
 package Source.Controllers;
 
+import Source.Models.Actor;
 import Source.Models.Episode;
 import Source.Models.Movie;
+import Source.Services.ActorService;
 import Source.Services.EpisodeService;
 import Source.Services.MovieService;
 import jakarta.servlet.http.HttpSession;
@@ -14,8 +16,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 @Controller
@@ -23,11 +27,14 @@ import java.util.List;
 public class AdminController {
     private final MovieService movieService;
     private final EpisodeService episodeService;
+    private final ActorService actorService;
     @Autowired
     public AdminController(MovieService movieService,
-                           EpisodeService episodeService) {
+                           EpisodeService episodeService,
+                           ActorService actorService) {
         this.movieService = movieService;
         this.episodeService = episodeService;
+        this.actorService = actorService;
     }
 
     @RequestMapping("")
@@ -257,5 +264,224 @@ public class AdminController {
         }
 
         return viewEpisode(0, 7, model, session);
+    }
+
+    @RequestMapping("/episode/delete")
+    public String deleteEpisode(@RequestParam("id") int episodeId,
+                                Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        Episode episode = episodeService.findById(episodeId);
+        if(episode != null){
+            episodeService.delete(episode);
+        }
+        return viewEpisode(0, 7, model, session);
+    }
+
+    @RequestMapping("/actor")
+    public String viewActor(@RequestParam(name = "page", defaultValue = "0") int page,
+                            @RequestParam(name = "size", defaultValue = "7") int size,
+                            Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        List<Actor> actors;
+        if(model.getAttribute("actors") == null){
+            actors = actorService.findAll()
+                    .stream()
+                    .sorted(Comparator.comparing(Actor::getActorId).reversed())
+                    .toList();
+            model.addAttribute("dividerPage", "");
+        }else {
+            actors = (List<Actor>) model.getAttribute("actors");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        assert actors != null;
+        Page<Actor> actorPage = actorService.pageableActors(actors, pageable);
+
+        model.addAttribute("actors", actorPage.getContent());
+        model.addAttribute("actorPage", actorPage);
+        model.addAttribute("page", "actor");
+        if(model.getAttribute("movies") == null){
+            model.addAttribute("movies", movieService.findAll());
+        }
+        return "admin";
+    }
+
+    @RequestMapping("/actor/filter")
+    public String filterActorBy(@RequestParam("actor_name") String actorName,
+                                @RequestParam("movie") String movie,
+                                @RequestParam(name = "page", defaultValue = "0") int page,
+                                @RequestParam(name = "size", defaultValue = "7") int size,
+                                Model model, HttpSession session){
+        List<Actor> actors = actorService.findAll();
+
+        if(!actorName.isEmpty()){
+            actors = actors.stream()
+                    .filter(actor -> actor.getName().toLowerCase().contains(actorName.toLowerCase()))
+                    .toList();
+        }
+
+        if(!movie.equals("Tất cả")){
+            actors = actors.stream()
+                    .filter(actor -> actor.getMovies()
+                            .stream()
+                            .anyMatch(m -> m.getTitle().equals(movie)))
+                    .toList();
+        }
+
+        model.addAttribute("actors", actors);
+        model.addAttribute("dividerPage", "filter");
+        model.addAttribute("actorNameFilter", actorName);
+        model.addAttribute("movieFilter", movie);
+        return viewActor(page, size, model, session);
+    }
+
+    @RequestMapping("/actor/edit")
+    public String editActor(@RequestParam("id") int actorId,
+                            Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        Actor actor = actorService.findById(actorId);
+        model.addAttribute("actorEdit", actor);
+        model.addAttribute("showActorForm", true);
+        model.addAttribute("movies", movieService.findAll());
+        return viewActor(0, 7, model, session);
+    }
+
+    @RequestMapping("/actor/handle")
+    public String handleEditActor(@RequestParam("id") String actorId,
+                                  @RequestParam("actorName") String actorName,
+                                  @RequestParam("biography") String biography,
+                                  Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        Actor actor = actorService.findById(Integer.parseInt(actorId));
+        if(actor != null){
+            actor.setName(actorName);
+            actor.setBiography(biography);
+            actorService.update(actor);
+        }else {
+            Actor newActor = new Actor(0, actorName, biography, new ArrayList<>());
+            actorService.save(newActor);
+        }
+
+        return viewActor(0, 7, model, session);
+    }
+
+    @RequestMapping("/actor/delete")
+    public String deleteActor(@RequestParam("id") int actorId,
+                              Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        Actor actor = actorService.findById(actorId);
+        if(actor != null){
+            actorService.delete(actor);
+        }
+        return viewActor(0, 7, model, session);
+    }
+
+    @RequestMapping("/actor/movie")
+    public String addMovieToActor(@RequestParam("id") int actorId,
+                                  @RequestParam(name = "page", defaultValue = "0") int page,
+                                  @RequestParam(name = "size", defaultValue = "7") int size,
+                                  Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        Actor actor = actorService.findById(actorId);
+
+        List<Movie> movies;
+        if(model.getAttribute("movies") == null) {
+            movies = movieService.findAll()
+                    .stream()
+                    .filter(movie -> movie.getActors().contains(actor))
+                    .sorted(Comparator.comparing(Movie::getMovieId).reversed())
+                    .toList();
+            model.addAttribute("dividerPage", "");
+        }else {
+            movies = (List<Movie>) model.getAttribute("movies");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        assert movies != null;
+        Page<Movie> moviePage = movieService.pageableMovies(movies, pageable);
+
+        model.addAttribute("movies", moviePage.getContent());
+        model.addAttribute("moviePage", moviePage);
+        model.addAttribute("page", "actor-movie");
+        model.addAttribute("actor", actor);
+
+        movies = movieService.findAll()
+                .stream()
+                .filter(movie -> !movie.getActors().contains(actor))
+                .toList();
+        model.addAttribute("moviesNotInActor", movies);
+
+        return "admin";
+    }
+
+    @RequestMapping("/actor/movie/filter")
+    public String filterMovieByActor(@RequestParam("id") int actorId,
+                                     @RequestParam("movie") String movie,
+                                     @RequestParam(name = "page", defaultValue = "0") int page,
+                                     @RequestParam(name = "size", defaultValue = "7") int size,
+                                     Model model, HttpSession session){
+        List<Movie> movies = movieService.findAll()
+                .stream()
+                .filter(m -> m.getActors()
+                        .stream()
+                        .anyMatch(actor -> actor.getActorId() == actorId)
+                        && m.getTitle().toLowerCase().contains(movie.toLowerCase()))
+                .toList();
+
+        model.addAttribute("movies", movies);
+        model.addAttribute("dividerPage", "filter");
+        model.addAttribute("actorIdFilter", actorId);
+        model.addAttribute("movieFilter", movie);
+        return addMovieToActor(actorId, page, size, model, session);
+    }
+
+    @RequestMapping("/actor/movie/handle")
+    public String handleEditMovieToActor(@RequestParam("id") int actorId,
+                                         @RequestParam("actorName") String actorName,
+                                         @RequestParam("movie") String movieTitle,
+                                         Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        Movie movie = movieService.findAll()
+                .stream()
+                .filter(m -> m.getTitle().equals(movieTitle))
+                .findFirst()
+                .orElse(null);
+
+        assert movie != null;
+        actorService.insertActionMovie(actorId, movie.getMovieId());
+        return addMovieToActor(actorId, 0, 7, model, session);
+    }
+
+    @RequestMapping("/actor/movie/delete")
+    public String deleteMovieFromActor(@RequestParam("actor_id") int actorId,
+                                       @RequestParam("movie_id") int movieId,
+                                       Model model, HttpSession session){
+        if(session.getAttribute("user") == null){
+            return "redirect:/";
+        }
+
+        actorService.deleteActionMovie(actorId, movieId);
+        return addMovieToActor(actorId, 0, 7, model, session);
     }
 }
