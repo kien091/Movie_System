@@ -311,9 +311,6 @@ public class HomeController {
             session.removeAttribute("user_storage");
             session.removeAttribute("otp");
 
-            BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
-            String bcryptPassword = bcrypt.encode(user.getPassword());
-            user.setPassword(bcryptPassword);
             userService.save(user);
             session.setAttribute("user", user);
         } else {
